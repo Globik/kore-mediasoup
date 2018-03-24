@@ -1,0 +1,95 @@
+{
+  "_from": "mediasoup",
+  "_id": "mediasoup@1.2.8",
+  "_inBundle": false,
+  "_integrity": "sha512-EyjjkMmIXevCv/zhXYhM+I8RM88elj9X8hhKe+MUTx5N6MQoiwMK5Nm9ZHPB3mLspXKp/MMceJ7+j5LCCuD0Mg==",
+  "_location": "/mediasoup",
+  "_phantomChildren": {
+    "ms": "2.0.0"
+  },
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "mediasoup",
+    "name": "mediasoup",
+    "escapedName": "mediasoup",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/mediasoup/-/mediasoup-1.2.8.tgz",
+  "_shasum": "6145800368a0ccea229e03c5ed20025ad8f4e33e",
+  "_spec": "mediasoup",
+  "_where": "/home/globik/alikon",
+  "author": {
+    "name": "Iñaki Baz Castillo",
+    "email": "ibc@aliax.net",
+    "url": "https://inakibaz.me"
+  },
+  "bugs": {
+    "url": "https://github.com/versatica/mediasoup/issues"
+  },
+  "bundleDependencies": false,
+  "contributors": [
+    {
+      "name": "José Luis Millán",
+      "email": "jmillan@aliax.net",
+      "url": "https://github.com/jmillan"
+    }
+  ],
+  "dependencies": {
+    "check-types": "^7.2.0",
+    "clang-tools-prebuilt": "^0.1.4",
+    "clone": "^2.1.1",
+    "debug": "^2.6.8",
+    "netstring": "^0.3.0",
+    "random-number": "0.0.7",
+    "randomatic": "^1.1.7",
+    "sdp-transform": "^2.3.0"
+  },
+  "deprecated": false,
+  "description": "Cutting Edge WebRTC Video Conferencing",
+  "devDependencies": {
+    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-clang-format": "^1.0.23",
+    "gulp-eslint": "^4.0.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-replace": "^0.6.1",
+    "gulp-shell": "^0.6.3",
+    "gulp-touch-cmd": "0.0.1",
+    "tap": "^10.7.0"
+  },
+  "engines": {
+    "node": ">=4.8.0 <5.0.0 || >=5.7.0"
+  },
+  "homepage": "https://mediasoup.org",
+  "keywords": [
+    "webrtc",
+    "sfu",
+    "node",
+    "node-module",
+    "ortc"
+  ],
+  "license": "ISC",
+  "main": "lib/mediasoup.js",
+  "name": "mediasoup",
+  "optionalDependencies": {
+    "clang-tools-prebuilt": "^0.1.4"
+  },
+  "os": [
+    "!win32"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/versatica/mediasoup.git"
+  },
+  "scripts": {
+    "postinstall": "make Release",
+    "test": "gulp test"
+  },
+  "version": "1.2.8"
+}
