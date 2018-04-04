@@ -1,6 +1,8 @@
 #ifndef LIBUV_HPP
 #define LIBUV_HPP
 #include <uv.h>
+#include <iostream>
+//void*pt2obj;
 class deplibuv
 {
 public:
@@ -10,6 +12,9 @@ public:
 	static void runloop();
 	static uv_loop_t* getloop();
 	static uint64_t gettime();
+	
+	void display(char*text);//{std::cout << text << std::endl;};
+	static void wrapper_to_call_display(char*text);
 private:
 	static uv_loop_t*loop;
 };

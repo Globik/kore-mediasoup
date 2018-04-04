@@ -11,12 +11,16 @@ static void init();
 static void destroy();
 static void exits();
 static void exite();
-
+void*pt2obj;
 uv_callback_t suka,result,stop_worker;
 
 void * on_progress(uv_callback_t*,void*);
 void * on_result(uv_callback_t*,void*);
 void * stop_worker_cb(uv_callback_t*,void*);
+
+void doit(void(*pfunc)(char*text)){
+pfunc("text");
+}
 
 int main(){
 	std::cout << "hallo\n";
@@ -54,6 +58,9 @@ std::_Exit(EXIT_FAILURE);
 }
 void * on_progress(uv_callback_t*handle,void*value){
 std::printf("progress: %s\n",(char*)value);
+deplibuv ob;
+pt2obj=(void*)&ob;
+doit(deplibuv::wrapper_to_call_display);
 return value;
 }
 void * on_result(uv_callback_t*handle,void*value){

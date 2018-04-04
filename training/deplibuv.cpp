@@ -1,6 +1,7 @@
 #include "deplibuv.hpp"
 #include <iostream>
 #include <cstdlib>
+extern void*pt2obj;
 // g++ -std=c++11 `pkg-config --cflags libuv` -c deplibuv.cpp 
 
 // gcc `pkg-config --cflags libuv` -c uv_callback.c 
@@ -16,6 +17,13 @@ int err;
 	std::abort();
 	}
 }
+void deplibuv::display(char*text){std::cout << text << std::endl;};
+void deplibuv::wrapper_to_call_display(char*string){
+deplibuv* myself=(deplibuv*)pt2obj;
+myself->display(string);
+}
+
+
 void deplibuv::classdestroy(){
 if(deplibuv::loop==nullptr){ 
 std::cout << "loop was not allocated.\n";
