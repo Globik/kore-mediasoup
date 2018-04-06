@@ -1,0 +1,1 @@
+trying to get to work libuv.cpp class as a shared library. To call a C++ class from within C code.

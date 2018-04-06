@@ -92,7 +92,7 @@ return value;
 void * on_result(uv_callback_t*handle,void*value){
 //std::printf("ON result occured: %s.\n",(char*)value);
 //	*((double*)
-	std::printf("on result occured: %d\n",(int)value);
+std::printf("on result occured: %d\n",(int)value);
 uv_callback_fire(&stop_worker,NULL,NULL);
 return NULL;
 }
