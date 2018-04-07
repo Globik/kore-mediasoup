@@ -1,0 +1,1 @@
+Trying to implement two-way callback system communication. With help of uv_callback lib.
