@@ -5,3 +5,5 @@ a: Notifier.cpp
 	g++ -std=c++11 $(I) -c Notifier.cpp
 b: Request.cpp
 	g++ -std=c++11 $(I) -c Request.cpp
+c: Room.cpp
+	g++ -std=c++11 $(I) -c Room.cpp
