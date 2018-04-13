@@ -77,7 +77,7 @@ namespace Channel
 			return;
 
 		// MS_TRACE_STD();
-
+/*
 		std::ostringstream stream;
 		std::string nsPayload;
 		size_t nsPayloadLen;
@@ -111,8 +111,8 @@ namespace Channel
 		}
 
 		nsLen = nsNumLen + nsPayloadLen + 2;
-
-		Write(WriteBuffer, nsLen);
+*/
+		Write((const uint8_t*)"mama\0", 5);
 	}
 
 	void UnixStreamSocket::SendLog(char* nsPayload, size_t nsPayloadLen)
@@ -185,25 +185,22 @@ namespace Channel
 		nsLen = nsNumLen + nsPayloadLen + 2;
 		*/
 
-		Write(WriteBuffer, nsLen);
+		Write((const uint8_t*)"papa\0", 5);
 	}
 
 	void UnixStreamSocket::UserOnUnixStreamRead()
 	{
 		MS_TRACE_STD();
-
+std::printf("unixstreamsocket::useronunixstreamread()\n");
 		// Be ready to parse more than a single message in a single TCP chunk.
-		while (true)
-		{
-			if (IsClosing())
-				return;
+		while (true){
+			if (IsClosing())return;
 
-			size_t readLen  = this->bufferDataLen - this->msgStart;
-			char* jsonStart = nullptr;
-			size_t jsonLen;
-			int nsRet = netstring_read(
-			    reinterpret_cast<char*>(this->buffer + this->msgStart), readLen, &jsonStart, &jsonLen);
-
+size_t readLen  = this->bufferDataLen - this->msgStart;
+char* jsonStart = nullptr;
+size_t jsonLen;
+//int nsRet = netstring_read( reinterpret_cast<char*>(this->buffer + this->msgStart), readLen, &jsonStart, &jsonLen);
+/*
 			if (nsRet != 0)
 			{
 				switch (nsRet)
@@ -264,6 +261,9 @@ namespace Channel
 
 				return;
 			}
+			
+	*/		
+			
 
 			// If here it means that jsonStart points to the beginning of a JSON string
 			// with jsonLen bytes length, so recalculate readLen.
@@ -324,6 +324,8 @@ namespace Channel
 
 			break;
 		}
+		
+		
 	}
 
 	void UnixStreamSocket::UserOnUnixStreamSocketClosed(bool isClosedByPeer)

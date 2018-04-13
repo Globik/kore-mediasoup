@@ -2,7 +2,7 @@
 // #define MS_LOG_DEV
 
 #include "Loop.hpp"
-#include "DepLibUV.hpp"
+#include "deplibuv.hpp"
 #include "Logger.hpp"
 #include "MediaSoupError.hpp"
 #include "Settings.hpp"
@@ -32,7 +32,7 @@ Loop::Loop(Channel::UnixStreamSocket* channel) : channel(channel)
 	this->signalsHandler->AddSignal(SIGTERM, "TERM");
 
 	MS_DEBUG_DEV("starting libuv loop");
-	DepLibUV::RunLoop();
+	deplibuv::runloop();
 	MS_DEBUG_DEV("libuv loop ended");
 }
 
@@ -159,7 +159,7 @@ void Loop::OnChannelRequest(Channel::UnixStreamSocket* /*channel*/, Channel::Req
 
 		case Channel::Request::MethodId::WORKER_UPDATE_SETTINGS:
 		{
-			Settings::HandleRequest(request);
+			//Settings::HandleRequest(request);
 
 			break;
 		}
@@ -207,7 +207,7 @@ void Loop::OnChannelRequest(Channel::UnixStreamSocket* /*channel*/, Channel::Req
 			Json::Value data(Json::objectValue);
 
 			// Add `capabilities`.
-			data[JsonStringCapabilities] = room->GetCapabilities().ToJson();
+			//data[JsonStringCapabilities] = room->GetCapabilities().ToJson();
 
 			request->Accept(data);
 

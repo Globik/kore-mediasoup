@@ -3,6 +3,8 @@
 
 #include "common.hpp"
 #include <uv.h>
+#include "uv_callback.h"
+// /home/globik/kore-mediasoup/training/luvi/l/libuv_callback.so
 #include <string>
 
 class UnixStreamSocket
@@ -29,6 +31,8 @@ public:
 	bool IsClosing() const;
 	void Write(const uint8_t* data, size_t len);
 	void Write(const std::string& data);
+	uv_callback_t to_cpp;
+	static void * on_to_cpp(uv_callback_t *callback,void*data);
 
 	/* Callbacks fired by UV events. */
 public:
@@ -50,6 +54,7 @@ private:
 	bool isClosing{ false };
 	bool isClosedByPeer{ false };
 	bool hasError{ false };
+	//uv_callback_t to_cpp;
 
 protected:
 	// Passed by argument.

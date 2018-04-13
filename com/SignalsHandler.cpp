@@ -2,7 +2,7 @@
 // #define MS_LOG_DEV
 
 #include "handles/SignalsHandler.hpp"
-#include "DepLibUV.hpp"
+#include "deplibuv.hpp"
 #include "Logger.hpp"
 #include "MediaSoupError.hpp"
 
@@ -34,7 +34,7 @@ void SignalsHandler::AddSignal(int signum, const std::string& name)
 	auto uvHandle  = new uv_signal_t;
 	uvHandle->data = (void*)this;
 
-	err = uv_signal_init(DepLibUV::GetLoop(), uvHandle);
+	err = uv_signal_init(deplibuv::getloop(), uvHandle);
 	if (err != 0)
 	{
 		delete uvHandle;

@@ -67,6 +67,6 @@ namespace Channel
 		json[JsonStringBinary]   = true;
 
 		this->channel->Send(json);
-		this->channel->SendBinary(binaryData, binaryLen);
+		//this->channel->SendBinary(binaryData, binaryLen);
 	}
 } // namespace Channel

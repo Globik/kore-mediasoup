@@ -7,11 +7,13 @@
 // #define MS_LOG_DEV
 
 #include "handles/UnixStreamSocket.hpp"
-#include "DepLibUV.hpp"
+#include "deplibuv.hpp"
 #include "Logger.hpp"
 #include "MediaSoupError.hpp"
 #include <cstdlib> // std::malloc(), std::free()
 #include <cstring> // std::memcpy()
+
+uv_callback_t from_cpp;
 
 /* Static methods for UV callbacks. */
 
@@ -54,16 +56,26 @@ inline static void onErrorClose(uv_handle_t* handle)
 }
 
 /* Instance methods. */
+void*UnixStreamSocket::on_to_cpp(uv_callback_t*callback,void*data){
+std::printf("ON_TO_CPP occured: %s\n",(char*)data);
+return nullptr;
+}
 
 UnixStreamSocket::UnixStreamSocket(int fd, size_t bufferSize) : bufferSize(bufferSize)
 {
 	MS_TRACE_STD();
-
+std::printf("UnixStreamSocket::UnixStreamSocket(int fd, size_t bufferSize) : bufferSize(bufferSize)\n");
 	int err;
 
 	this->uvHandle       = new uv_pipe_t;
 	this->uvHandle->data = (void*)this;
-
+	
+int rc=uv_callback_init(deplibuv::getloop(), &this->to_cpp, UnixStreamSocket::on_to_cpp, UV_DEFAULT);
+std::printf("rc to_cpp init: %d\n",rc);
+	
+	//int rc=uv_callback_init(deplibuv::getloop(),&from_cpp, on_from_cpp, UV_DEFAULT);
+	//std::cout << "in deplibuv.cpp rc2: " << rc << std::endl;
+/*
 	err = uv_pipe_init(DepLibUV::GetLoop(), this->uvHandle, 0);
 	if (err != 0)
 	{
@@ -80,8 +92,9 @@ UnixStreamSocket::UnixStreamSocket(int fd, size_t bufferSize) : bufferSize(buffe
 
 		MS_THROW_ERROR_STD("uv_pipe_open() failed: %s", uv_strerror(err));
 	}
-
+*/
 	// Start reading.
+	/*
 	err = uv_read_start(
 	    reinterpret_cast<uv_stream_t*>(this->uvHandle),
 	    static_cast<uv_alloc_cb>(onAlloc),
@@ -92,14 +105,14 @@ UnixStreamSocket::UnixStreamSocket(int fd, size_t bufferSize) : bufferSize(buffe
 
 		MS_THROW_ERROR_STD("uv_read_start() failed: %s", uv_strerror(err));
 	}
-
+*/
 	// NOTE: Don't allocate the buffer here. Instead wait for the first uv_alloc_cb().
 }
 
 UnixStreamSocket::~UnixStreamSocket()
 {
 	MS_TRACE_STD();
-
+std::printf("deleting the buffer and uvhandle\n");
 	delete this->uvHandle;
 	delete[] this->buffer;
 }
@@ -107,14 +120,14 @@ UnixStreamSocket::~UnixStreamSocket()
 void UnixStreamSocket::Destroy()
 {
 	MS_TRACE_STD();
-
+std::printf("unixstreamsocket::destroy()\n");
 	if (this->isClosing)
 		return;
 
 	int err;
 
 	this->isClosing = true;
-
+/*
 	// Don't read more.
 	err = uv_read_stop(reinterpret_cast<uv_stream_t*>(this->uvHandle));
 	if (err != 0)
@@ -136,16 +149,18 @@ void UnixStreamSocket::Destroy()
 	{
 		uv_close(reinterpret_cast<uv_handle_t*>(this->uvHandle), static_cast<uv_close_cb>(onClose));
 	}
+	*/
 }
 
 void UnixStreamSocket::Write(const uint8_t* data, size_t len)
 {
+	std::printf("unixstreamsocket::write(const uint8_t*data,size_t len)\n");
 	if (this->isClosing)
 		return;
 
 	if (len == 0)
 		return;
-	std::coud << "write data len occured in handle_unixstreamsocket.cpp." << std::endl;
+	std::cout << "write data len occured in handle_unixstreamsocket.cpp." << std::endl;
 /*
 	uv_buf_t buffer{};
 	int written;
@@ -225,6 +240,7 @@ inline void UnixStreamSocket::OnUvReadAlloc(size_t /*suggestedSize*/, uv_buf_t* 
 
 inline void UnixStreamSocket::OnUvRead(ssize_t nread, const uv_buf_t* /*buf*/)
 {
+	std::printf("UnixStreamSocket::OnUvRead(ssize_t nread, const uv_buf_t*) ??\n");
 	/*
 	MS_TRACE_STD();
 
