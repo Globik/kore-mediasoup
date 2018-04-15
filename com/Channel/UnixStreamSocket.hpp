@@ -8,7 +8,7 @@
 
 namespace Channel
 {
-	class UnixStreamSocket : public ::UnixStreamSocket
+	class UnixStreamSocket /* : public ::UnixStreamSocket */
 	{
 	public:
 		class Listener
@@ -22,7 +22,7 @@ namespace Channel
 		explicit UnixStreamSocket(int fd);
 
 	private:
-		~UnixStreamSocket() override;
+		~UnixStreamSocket() ;//override;
 
 	public:
 		void SetListener(Listener* listener);
@@ -32,8 +32,8 @@ namespace Channel
 
 		/* Pure virtual methods inherited from ::UnixStreamSocket. */
 	public:
-		void UserOnUnixStreamRead() override;
-		void UserOnUnixStreamSocketClosed(bool isClosedByPeer) override;
+		void UserOnUnixStreamRead();// override;
+		void UserOnUnixStreamSocketClosed(bool isClosedByPeer);//override;
 
 	private:
 		// Passed by argument.

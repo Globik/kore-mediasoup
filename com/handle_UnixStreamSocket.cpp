@@ -56,22 +56,57 @@ inline static void onErrorClose(uv_handle_t* handle)
 }
 
 /* Instance methods. */
-void*UnixStreamSocket::on_to_cpp(uv_callback_t*callback,void*data){
-std::printf("ON_TO_CPP occured: %s\n",(char*)data);
-return nullptr;
-}
+//void*UnixStreamSocket::
 
+ void*UnixStreamSocket::on_to_cpp(uv_callback_t*callback,void*data){
+std::printf("ON_TO_CPP occured: %s\n",(char*)data);
+//UnixStreamSocket::dt=(char*)data;
+UnixStreamSocketUserOnUnixStreamRead();
+	// void * m=nullptr;
+	//const uv_buf_t*ml=(uv_buf_t*)data;
+//	static_cast<UnixStreamSocket*>(m)->OnUvRead(17,ml);
+	//((UnixStreamSocket*)m)->fuck(12);
+	 
+	//UnixStreamSocket()->b=1;
+	// struct fucker*ml;
+	// int s=ml->a;
+	// std::printf("%d\n",s);
+	 //int su=((UnixStreamSocket*)m)->mina->a;
+	 //int s=this->mina->a;
+return nullptr;
+ }
+
+	
+//return nullptr;
+
+inline void UnixStreamSocket::fuck(int a){
+std::printf("an int %d\n", a);
+std::printf("bb: %d\n",b);
+}
 UnixStreamSocket::UnixStreamSocket(int fd, size_t bufferSize) : bufferSize(bufferSize)
 {
 	MS_TRACE_STD();
 std::printf("UnixStreamSocket::UnixStreamSocket(int fd, size_t bufferSize) : bufferSize(bufferSize)\n");
 	int err;
+b=9;
+	this->mina=new fucker;
+	this->mina->a=3;
+	//this->uvHandle       = new uv_pipe_t;
+	//this->uvHandle->data = (void*)this;
+	//this->b=4;
+	//static
+int rc=uv_callback_init(deplibuv::getloop(), &this->to_cpp, this->on_to_cpp, UV_DEFAULT);
+	//non static
+	//static_cast<UnixStreamSocket*>(req->data)->OnUvShutdown(req, status);
 
-	this->uvHandle       = new uv_pipe_t;
-	this->uvHandle->data = (void*)this;
-	
-int rc=uv_callback_init(deplibuv::getloop(), &this->to_cpp, UnixStreamSocket::on_to_cpp, UV_DEFAULT);
-std::printf("rc to_cpp init: %d\n",rc);
+/*cannot convert ‘UnixStreamSocket::on_to_cpp’ 
+from type ‘void* (UnixStreamSocket::)(uv_callback_t*, void*) 
+{aka void* (UnixStreamSocket::)(uv_callback_s*, void*)}’ 
+to type ‘uv_callback_func 
+{aka void* (*)(uv_callback_s*, void*)}’
+*/
+//int rc=uv_callback_init(deplibuv::getloop(), &this->to_cpp, on_to_cpp, UV_DEFAULT);
+//std::printf("rc to_cpp init: %d\n",rc);
 	
 	//int rc=uv_callback_init(deplibuv::getloop(),&from_cpp, on_from_cpp, UV_DEFAULT);
 	//std::cout << "in deplibuv.cpp rc2: " << rc << std::endl;
@@ -238,9 +273,15 @@ inline void UnixStreamSocket::OnUvReadAlloc(size_t /*suggestedSize*/, uv_buf_t* 
 	}
 }
 
-inline void UnixStreamSocket::OnUvRead(ssize_t nread, const uv_buf_t* /*buf*/)
+inline void UnixStreamSocket::OnUvRead(ssize_t nread, const uv_buf_t*)
 {
 	std::printf("UnixStreamSocket::OnUvRead(ssize_t nread, const uv_buf_t*) ??\n");
+	//std::printf("data: %zu and %s\n",nread,(char*)buf);
+
+	//this->dt=(char*)buf;
+	//this->bufferDataLen += static_cast<size_t>(nread);
+	//UnixStreamSocket::b=3;
+	//UserOnUnixStreamRead();
 	/*
 	MS_TRACE_STD();
 

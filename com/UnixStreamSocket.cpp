@@ -23,7 +23,7 @@ namespace Channel
 
 	/* Instance methods. */
 
-	UnixStreamSocket::UnixStreamSocket(int fd) : ::UnixStreamSocket::UnixStreamSocket(fd, MaxSize)
+	UnixStreamSocket::UnixStreamSocket(int fd) //: ::UnixStreamSocket::UnixStreamSocket(fd, MaxSize)
 	{
 		MS_TRACE_STD();
 
@@ -112,7 +112,7 @@ namespace Channel
 
 		nsLen = nsNumLen + nsPayloadLen + 2;
 */
-		Write((const uint8_t*)"mama\0", 5);
+		//Write((const uint8_t*)"mama\0", 5);
 	}
 
 	void UnixStreamSocket::SendLog(char* nsPayload, size_t nsPayloadLen)
@@ -185,20 +185,22 @@ namespace Channel
 		nsLen = nsNumLen + nsPayloadLen + 2;
 		*/
 
-		Write((const uint8_t*)"papa\0", 5);
+		//Write((const uint8_t*)"papa\0", 5);
 	}
 
 	void UnixStreamSocket::UserOnUnixStreamRead()
 	{
 		MS_TRACE_STD();
 std::printf("unixstreamsocket::useronunixstreamread()\n");
+		//return;
 		// Be ready to parse more than a single message in a single TCP chunk.
 		while (true){
-			if (IsClosing())return;
+			//if (IsClosing())return;
 
-size_t readLen  = this->bufferDataLen - this->msgStart;
+//size_t readLen  = this->bufferDataLen - this->msgStart;
 char* jsonStart = nullptr;
 size_t jsonLen;
+			//int la=this->mina->a;
 //int nsRet = netstring_read( reinterpret_cast<char*>(this->buffer + this->msgStart), readLen, &jsonStart, &jsonLen);
 /*
 			if (nsRet != 0)
