@@ -2,12 +2,14 @@
 // #define MS_LOG_DEV
 
 #include "Channel/UnixStreamSocket.hpp"
+#include "deplibuv.hpp"
 #include "Logger.hpp"
 #include "MediaSoupError.hpp"
 #include <cmath>   // std::ceil()
 #include <cstdio>  // sprintf()
 #include <cstring> // std::memmove()
 #include <sstream> // std::ostringstream
+#include <string>
 extern "C" {
 //#include <netstring.h>
 }
@@ -20,13 +22,17 @@ namespace Channel
 	static constexpr size_t MaxSize{ 65543 };
 	static constexpr size_t MessageMaxSize{ 65536 };
 	static uint8_t WriteBuffer[MaxSize];
+	class UnixStreamSocket::Listener *li{nullptr};
 
 	/* Instance methods. */
 
 	UnixStreamSocket::UnixStreamSocket(int fd) //: ::UnixStreamSocket::UnixStreamSocket(fd, MaxSize)
 	{
 		MS_TRACE_STD();
-
+		//Listener lis;
+int rc=uv_callback_init(deplibuv::getloop(), &this->to_cpp, UnixStreamSocket::on_to_cpp, UV_DEFAULT);
+		std::printf("rc: %d\n",rc);
+		
 		// Create the JSON reader.
 		{
 			Json::CharReaderBuilder builder;
@@ -58,23 +64,39 @@ namespace Channel
 
 	UnixStreamSocket::~UnixStreamSocket()
 	{
-		MS_TRACE_STD();
-
+MS_TRACE_STD();
+std::printf("What the fuck in destractor?\n");
 		delete this->jsonReader;
 		delete this->jsonWriter;
 	}
+	
+void * UnixStreamSocket::on_to_cpp(uv_callback_t*callback,void*data)
+{
+std::printf("HERE AND HERE ON_TO_CPP occured: %s\n",(char*)data);
+	Channel::UnixStreamSocket m(4);
+//	new Channel::UnixStreamSocket(channelFd);
+	m.UserOnUnixStreamRead("{\"dama\":\"sama\"}\0");
+	//UnixStreamSocket::UserOnUnixStreamRead("mama\0");
+	//UserOnUnixStreamRead("m");
+return nullptr;
+}
+//Listener  li=this->listener;
 
 	void UnixStreamSocket::SetListener(Listener* listener)
 	{
 		MS_TRACE_STD();
+		std::printf("unixstreamsocket::setlistener()\n");
 
 		this->listener = listener;
+		li=listener;
+		this->listener->mfuck();
 	}
 
 	void UnixStreamSocket::Send(Json::Value& msg)
 	{
-		if (this->closed)
-			return;
+		std::printf("UnixStreamSocket::Send(Json) occured\n");
+		std::cout << msg << std::endl;
+		//if (this->closed)return;
 
 		// MS_TRACE_STD();
 /*
@@ -117,8 +139,8 @@ namespace Channel
 
 	void UnixStreamSocket::SendLog(char* nsPayload, size_t nsPayloadLen)
 	{
-		if (this->closed)
-			return;
+		std::printf("unixstreamsocket::sendlog() occured.\n");
+		//if (this->closed)return;
 
 		// MS_TRACE_STD();
 /*
@@ -188,101 +210,54 @@ namespace Channel
 		//Write((const uint8_t*)"papa\0", 5);
 	}
 
-	void UnixStreamSocket::UserOnUnixStreamRead()
+void UnixStreamSocket::UserOnUnixStreamRead(char*k)
 	{
-		MS_TRACE_STD();
-std::printf("unixstreamsocket::useronunixstreamread()\n");
+//MS_TRACE_STD();
+std::printf("unixstreamsocket::useronunixstreamread() %s\n",k);
+		//mChannel::UnixStreamSocket * Channel::Listener;//=new Channel::UnixStreamSocket::Listener();
+		//Channel::UnixStreamSocket Listener(4);//{ nullptr };
+		//UnixStreamSocket m(4);
+		//channel->listener->mfuck();
+		//Listener.listener->mfuck();
+		
+		//this->listener = listener;
+		
+		li->mfuck();
+		//this->listener->mfuck();
+		//this->listener->mfuck();
+	//Loop::OnChannelRequest(Channel::UnixStreamSocket* channel, Channel::Request* request)
+		//Loop::mfuck();
 		//return;
 		// Be ready to parse more than a single message in a single TCP chunk.
-		while (true){
+std::string text="{\"mama\":\"papa\"}";
+		
+	//	while (true){
 			//if (IsClosing())return;
 
 //size_t readLen  = this->bufferDataLen - this->msgStart;
 char* jsonStart = nullptr;
 size_t jsonLen;
-			//int la=this->mina->a;
-//int nsRet = netstring_read( reinterpret_cast<char*>(this->buffer + this->msgStart), readLen, &jsonStart, &jsonLen);
-/*
-			if (nsRet != 0)
-			{
-				switch (nsRet)
-				{
-					case NETSTRING_ERROR_TOO_SHORT:
-						// Check if the buffer is full.
-						if (this->bufferDataLen == this->bufferSize)
-						{
-							// First case: the incomplete message does not begin at position 0 of
-							// the buffer, so move the incomplete message to the position 0.
-							if (this->msgStart != 0)
-							{
-								std::memmove(this->buffer, this->buffer + this->msgStart, readLen);
-								this->msgStart      = 0;
-								this->bufferDataLen = readLen;
-							}
-							// Second case: the incomplete message begins at position 0 of the buffer.
-							// The message is too big, so discard it.
-							else
-							{
-								MS_ERROR_STD(
-								    "no more space in the buffer for the unfinished message being parsed, "
-								    "discarding it");
-
-								this->msgStart      = 0;
-								this->bufferDataLen = 0;
-							}
-						}
-						// Otherwise the buffer is not full, just wait.
-
-						// Exit the parsing loop.
-						return;
-
-					case NETSTRING_ERROR_TOO_LONG:
-						MS_ERROR_STD("NETSTRING_ERROR_TOO_LONG");
-						break;
-
-					case NETSTRING_ERROR_NO_COLON:
-						MS_ERROR_STD("NETSTRING_ERROR_NO_COLON");
-						break;
-
-					case NETSTRING_ERROR_NO_COMMA:
-						MS_ERROR_STD("NETSTRING_ERROR_NO_COMMA");
-						break;
-
-					case NETSTRING_ERROR_LEADING_ZERO:
-						MS_ERROR_STD("NETSTRING_ERROR_LEADING_ZERO");
-						break;
-
-					case NETSTRING_ERROR_NO_LENGTH:
-						MS_ERROR_STD("NETSTRING_ERROR_NO_LENGTH");
-						break;
-				}
-
-				// Error, so reset and exit the parsing loop.
-				this->msgStart      = 0;
-				this->bufferDataLen = 0;
-
-				return;
-			}
-			
-	*/		
-			
 
 			// If here it means that jsonStart points to the beginning of a JSON string
 			// with jsonLen bytes length, so recalculate readLen.
-			readLen = reinterpret_cast<const uint8_t*>(jsonStart) - (this->buffer + this->msgStart) +
-			          jsonLen + 1;
+			size_t readLen = 8;//reinterpret_cast<const uint8_t*>(jsonStart) - (/*this->buffer + */this->msgStart);
+			          //jsonLen + 1;
 
 			Json::Value json;
 			std::string jsonParseError;
 
-			if (this->jsonReader->parse(
-			        (const char*)jsonStart, (const char*)jsonStart + jsonLen, &json, &jsonParseError))
+			//if (this->jsonReader->parse((const char*)0, (const char*)10, (Json::Value*)"k", &jsonParseError))
+			if(this->jsonReader->parse(text.c_str(),text.c_str()+text.size(),&json,&jsonParseError))
 			{
+				std::printf("Here inner parse\n");
+				std::cout << json << std::endl;
 				Channel::Request* request = nullptr;
 
 				try
 				{
+					std::printf("request 1\n");
 					request = new Channel::Request(this, json);
+					std::printf("request2\n");
 				}
 				catch (const MediaSoupError& error)
 				{
@@ -291,10 +266,15 @@ size_t jsonLen;
 
 				if (request != nullptr)
 				{
+					std::printf("request is not nullptr\n");
+					//request->Reject("Room already exists");
 					// Notify the listener.
-					this->listener->OnChannelRequest(this, request);
-
-					// Delete the Request.
+					li->mfuck();
+					li->OnChannelRequest(this,request);
+					//this->listener->OnChannelRequest(this, request);
+					//this->listener->mfuck();
+UnixStreamSocket::fucki(this,request);
+					std::printf("Delete the Request.\n");
 					delete request;
 				}
 			}
@@ -305,6 +285,7 @@ size_t jsonLen;
 
 			// If there is no more space available in the buffer and that is because
 			// the latest parsed message filled it, then empty the full buffer.
+			/*
 			if ((this->msgStart + readLen) == this->bufferSize)
 			{
 				this->msgStart      = 0;
@@ -316,20 +297,24 @@ size_t jsonLen;
 			{
 				this->msgStart += readLen;
 			}
-
+*/
 			// If there is more data in the buffer after the parsed message
 			// then parse again. Otherwise break here and wait for more data.
-			if (this->bufferDataLen > this->msgStart)
-			{
-				continue;
-			}
+			//if (this->bufferDataLen > this->msgStart){continue;}
 
-			break;
-		}
+		//	break;
+	//	}
 		
 		
 	}
 
+	void UnixStreamSocket::fucki(UnixStreamSocket*channel,Request* request)
+{
+	
+}
+
+	
+	
 	void UnixStreamSocket::UserOnUnixStreamSocketClosed(bool isClosedByPeer)
 	{
 		MS_TRACE_STD();

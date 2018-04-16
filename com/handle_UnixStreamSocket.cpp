@@ -61,7 +61,7 @@ inline static void onErrorClose(uv_handle_t* handle)
  void*UnixStreamSocket::on_to_cpp(uv_callback_t*callback,void*data){
 std::printf("ON_TO_CPP occured: %s\n",(char*)data);
 //UnixStreamSocket::dt=(char*)data;
-UnixStreamSocketUserOnUnixStreamRead();
+//UnixStreamSocketUserOnUnixStreamRead();
 	// void * m=nullptr;
 	//const uv_buf_t*ml=(uv_buf_t*)data;
 //	static_cast<UnixStreamSocket*>(m)->OnUvRead(17,ml);
@@ -95,7 +95,7 @@ b=9;
 	//this->uvHandle->data = (void*)this;
 	//this->b=4;
 	//static
-int rc=uv_callback_init(deplibuv::getloop(), &this->to_cpp, this->on_to_cpp, UV_DEFAULT);
+int rc=uv_callback_init(deplibuv::getloop(), &this->to_cpp, static_cast<uv_callback_func>(UnixStreamSocket::on_to_cpp), UV_DEFAULT);
 	//non static
 	//static_cast<UnixStreamSocket*>(req->data)->OnUvShutdown(req, status);
 

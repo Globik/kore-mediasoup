@@ -97,7 +97,8 @@ int main(int argc, char* argv[])
 //std::printf("rc to_cpp init: %d\n",rc);
 int rc=uv_callback_fire(&(channel->to_cpp),(void*)"CPP IS a Fucker?", NULL);
 std::printf("rc fire %d\n",rc);
-		Loop loop(channel);
+		
+Loop loop(channel);
 
 		// Loop ended.
 		destroy();

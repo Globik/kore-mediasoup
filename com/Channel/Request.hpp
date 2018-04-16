@@ -49,6 +49,7 @@ namespace Channel
 		static std::unordered_map<std::string, MethodId> string2MethodId;
 
 	public:
+int a=10;
 		Request(Channel::UnixStreamSocket* channel, Json::Value& json);
 		virtual ~Request();
 

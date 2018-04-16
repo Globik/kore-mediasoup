@@ -34,7 +34,7 @@ public:
 	void Write(const std::string& data);
 	uv_callback_t to_cpp;
 	//static 
-		static void * on_to_cpp(uv_callback_t *callback,void*data);
+		void * on_to_cpp(uv_callback_t *callback,void*data);
 	//char*dt;
 
 	/* Callbacks fired by UV events. */

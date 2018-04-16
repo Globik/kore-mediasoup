@@ -2,9 +2,16 @@
 // #define MS_LOG_DEV
 
 #include "Channel/Request.hpp"
-//#include "Logger.hpp"
+#include "Logger.hpp"
 #include "MediaSoupError.hpp"
-
+//by me
+#include <string>
+#include <iostream>
+/*
+#include <cstdio>  // sprintf()
+#include <cstring> // std::memmove()
+#include <sstream> 
+*/
 namespace Channel
 {
 	/* Class variables. */
@@ -45,8 +52,9 @@ namespace Channel
 
 	Request::Request(Channel::UnixStreamSocket* channel, Json::Value& json) : channel(channel)
 	{
-		//MS_TRACE();
-
+		MS_TRACE();
+	std::printf("here must be within request::request\n");
+std::cout << json << std::endl;
 		static const Json::StaticString JsonStringId{ "id" };
 		static const Json::StaticString JsonStringMethod{ "method" };
 		static const Json::StaticString JsonStringInternal{ "internal" };
@@ -56,11 +64,13 @@ namespace Channel
 			this->id = json[JsonStringId].asUInt();
 		else
 			MS_THROW_ERROR("json has no numeric .id field");
+			//std::printf("json has no numeric .id field\n");
 
 		if (json[JsonStringMethod].isString())
 			this->method = json[JsonStringMethod].asString();
 		else
-			MS_THROW_ERROR("json has no string .method field");
+			std::printf("json has no string .method field\n");
+			//MS_THROW_ERROR("json has no string .method field");
 
 		auto it = Request::string2MethodId.find(this->method);
 
@@ -70,9 +80,10 @@ namespace Channel
 		}
 		else
 		{
+			std::printf("method not ALLOWED\n");
 			Reject("method not allowed");
 
-			MS_THROW_ERROR("unknown .method '%s'", this->method.c_str());
+			//MS_THROW_ERROR("unknown .method '%s'", this->method.c_str());
 		}
 
 		if (json[JsonStringInternal].isObject())
@@ -88,13 +99,14 @@ namespace Channel
 
 	Request::~Request()
 	{
+		std::printf("request destructure?\n");
 		//MS_TRACE();
 	}
 
 	void Request::Accept()
 	{
 		//MS_TRACE();
-
+std::printf("request::accept()\n");
 		static Json::Value emptyData(Json::objectValue);
 
 		Accept(emptyData);
@@ -103,7 +115,7 @@ namespace Channel
 	void Request::Accept(Json::Value& data)
 	{
 		MS_TRACE();
-
+std::printf("request accept 2\n");
 		static Json::Value emptyData(Json::objectValue);
 		static const Json::StaticString JsonStringId{ "id" };
 		static const Json::StaticString JsonStringAccepted{ "accepted" };
@@ -140,13 +152,15 @@ namespace Channel
 	void Request::Reject(const char* reason)
 	{
 		MS_TRACE();
-
+std::printf("KKKKKKKKKKKKKKKKKKKKKKKKu!!!\n");
 		static const Json::StaticString JsonStringId{ "id" };
 		static const Json::StaticString JsonStringRejected{ "rejected" };
 		static const Json::StaticString JsonStringReason{ "reason" };
-
-		MS_ASSERT(!this->replied, "Request already replied");
-
+std::cout << this->replied << std::endl;
+//MS_ASSERT(!this->replied, "Request already replied");
+std::printf("KUKU: %d\n",this->a);
+//if(this->replied) return;
+		this->a=40;
 		this->replied = true;
 
 		Json::Value json(Json::objectValue);

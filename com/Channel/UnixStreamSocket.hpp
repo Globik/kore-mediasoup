@@ -3,8 +3,10 @@
 
 #include "common.hpp"
 #include "Channel/Request.hpp"
-#include "handles/UnixStreamSocket.hpp"
+//#include "handles/UnixStreamSocket.hpp"
+
 #include <json/json.h>
+#include "uv_callback.h"
 
 namespace Channel
 {
@@ -16,28 +18,35 @@ namespace Channel
 		public:
 			virtual void OnChannelRequest(Channel::UnixStreamSocket* channel, Channel::Request* request) = 0;
 			virtual void OnChannelUnixStreamSocketRemotelyClosed(Channel::UnixStreamSocket* channel) = 0;
+		virtual void mfuck() = 0;
 		};
 
 	public:
 		explicit UnixStreamSocket(int fd);
 
 	private:
-		~UnixStreamSocket() ;//override;
+		~UnixStreamSocket();
 
 	public:
+		uv_callback_t to_cpp;
+		static void * on_to_cpp(uv_callback_t *callback,void*data);
 		void SetListener(Listener* listener);
+		//void getListener(
 		void Send(Json::Value& msg);
 		void SendLog(char* nsPayload, size_t nsPayloadLen);
 		void SendBinary(const uint8_t* nsPayload, size_t nsPayloadLen);
-
+		
+		void fucki(UnixStreamSocket*channel,Request* request);
+//void UnixStreamSocket::OnChannelRequest(Channel::UnixStreamSocket* channel, Channel::Request* request)
 		/* Pure virtual methods inherited from ::UnixStreamSocket. */
 	public:
-		void UserOnUnixStreamRead();// override;
+		void UserOnUnixStreamRead(char*k);// override;
 		void UserOnUnixStreamSocketClosed(bool isClosedByPeer);//override;
-
+Listener* listener{ nullptr };
+		Listener*fucker{nullptr};
 	private:
 		// Passed by argument.
-		Listener* listener{ nullptr };
+		//Listener* listener{ nullptr };
 		// Others.
 		Json::CharReader* jsonReader{ nullptr };
 		Json::StreamWriter* jsonWriter{ nullptr };

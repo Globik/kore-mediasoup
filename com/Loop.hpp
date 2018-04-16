@@ -30,6 +30,7 @@ public:
 public:
 	void OnChannelRequest(Channel::UnixStreamSocket* channel, Channel::Request* request) override;
 	void OnChannelUnixStreamSocketRemotelyClosed(Channel::UnixStreamSocket* channel) override;
+	void mfuck() override;
 
 	/* Methods inherited from RTC::Room::Listener. */
 public:

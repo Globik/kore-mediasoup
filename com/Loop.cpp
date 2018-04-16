@@ -16,10 +16,12 @@
 
 Loop::Loop(Channel::UnixStreamSocket* channel) : channel(channel)
 {
-	MS_TRACE();
+	//MS_TRACE();
 
-	// Set us as Channel's listener.
+	std::printf("Set us as Channel's listener.\n");
 	this->channel->SetListener(this);
+	this->channel->listener->mfuck();
+	Loop::mfuck();
 
 	// Create the Notifier instance.
 	this->notifier = new Channel::Notifier(this->channel);
@@ -31,20 +33,21 @@ Loop::Loop(Channel::UnixStreamSocket* channel) : channel(channel)
 	this->signalsHandler->AddSignal(SIGINT, "INT");
 	this->signalsHandler->AddSignal(SIGTERM, "TERM");
 
-	MS_DEBUG_DEV("starting libuv loop");
+	std::printf("starting libuv loop\n");
 	deplibuv::runloop();
-	MS_DEBUG_DEV("libuv loop ended");
+std::printf("libuv loop ended\n");
 }
 
 Loop::~Loop()
 {
-	MS_TRACE();
+	std::printf("loop destructer occured\n");
+	//MS_TRACE();
 }
 
 void Loop::Close()
 {
 	MS_TRACE();
-
+std::printf("loop::close() occured\n");
 	if (this->closed)
 	{
 		MS_ERROR("already closed");
@@ -74,14 +77,13 @@ void Loop::Close()
 	delete this->notifier;
 
 	// Close the Channel socket.
-	if (this->channel != nullptr)
-		this->channel->Destroy();
+	//if (this->channel != nullptr)this->channel->Destroy();
 }
 
 RTC::Room* Loop::GetRoomFromRequest(Channel::Request* request, uint32_t* roomId)
 {
-	MS_TRACE();
-
+	//MS_TRACE();
+std::printf("get room from request\n");
 	static const Json::StaticString JsonStringRoomId{ "roomId" };
 
 	auto jsonRoomId = request->internal[JsonStringRoomId];
@@ -111,26 +113,31 @@ void Loop::OnSignal(SignalsHandler* /*signalsHandler*/, int signum)
 	switch (signum)
 	{
 		case SIGINT:
-			MS_DEBUG_DEV("signal INT received, exiting");
+			std::printf("signal INT received, exiting\n");
 			Close();
 			break;
 
 		case SIGTERM:
-			MS_DEBUG_DEV("signal TERM received, exiting");
+			std::printf("signal TERM received, exiting\n");
 			Close();
 			break;
 
 		default:
-			MS_WARN_DEV("received a signal (with signum %d) for which there is no handling code", signum);
+			std::printf("received a signal (with signum %d) for which there is no handling code\n", signum);
 	}
 }
+void Loop::mfuck(){
+std::printf("loop::mfuck\n");
+}
 
-void Loop::OnChannelRequest(Channel::UnixStreamSocket* /*channel*/, Channel::Request* request)
+void Loop::OnChannelRequest(Channel::UnixStreamSocket* channel, Channel::Request* request)
 {
+	std::printf("Loop::OnChannelRequest()\n");
 	MS_TRACE();
 
-	MS_DEBUG_DEV("'%s' request", request->method.c_str());
-
+	//MS_DEBUG_DEV("'%s' request", request->method.c_str());
+//std::printf("Loop::OnChannelRequest()\n");
+//	return;
 	switch (request->methodId)
 	{
 		case Channel::Request::MethodId::WORKER_DUMP:
@@ -276,7 +283,7 @@ void Loop::OnChannelUnixStreamSocketRemotelyClosed(Channel::UnixStreamSocket* /*
 {
 	MS_TRACE_STD();
 
-	// When mediasoup Node process ends it sends a SIGTERM to us so we close this
+	std::printf("When mediasoup Node process ends it sends a SIGTERM to us so we close this\n");
 	// pipe and then exit.
 	// If the pipe is remotely closed it means that mediasoup Node process
 	// abruptly died (SIGKILL?) so we must die.
