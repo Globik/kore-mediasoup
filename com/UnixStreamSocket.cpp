@@ -22,15 +22,19 @@ namespace Channel
 	static constexpr size_t MaxSize{ 65543 };
 	static constexpr size_t MessageMaxSize{ 65536 };
 	static uint8_t WriteBuffer[MaxSize];
-	class UnixStreamSocket::Listener *li{nullptr};
+	
 
 	/* Instance methods. */
 
 	UnixStreamSocket::UnixStreamSocket(int fd) //: ::UnixStreamSocket::UnixStreamSocket(fd, MaxSize)
 	{
 		MS_TRACE_STD();
-		//Listener lis;
-int rc=uv_callback_init(deplibuv::getloop(), &this->to_cpp, UnixStreamSocket::on_to_cpp, UV_DEFAULT);
+	
+		uv_loop_t*mloop=deplibuv::getloop();
+		//uv_loop_set_data(mloop,(void*)"some_data");
+		uv_loop_set_data(mloop,(void*)this);
+		
+int rc=uv_callback_init(mloop, &this->to_cpp, UnixStreamSocket::on_to_cpp, UV_DEFAULT);
 		std::printf("rc: %d\n",rc);
 		
 		// Create the JSON reader.
@@ -72,12 +76,23 @@ std::printf("What the fuck in destractor?\n");
 	
 void * UnixStreamSocket::on_to_cpp(uv_callback_t*callback,void*data)
 {
+	
 std::printf("HERE AND HERE ON_TO_CPP occured: %s\n",(char*)data);
+	//char * gu=(char*)((uv_handle_t*)callback)->loop->data;
+//void*lu=uv_loop_get_data(deplibuv::getloop());
+//std::printf("some data came: %s\n",(char*)lu);
+//static_cast<UnixStreamSocket*>
+void*bu=uv_loop_get_data(deplibuv::getloop());
+	static_cast<UnixStreamSocket*>(bu)->listener->mfuck();
+	static_cast<UnixStreamSocket*>(bu)->UserOnUnixStreamRead("{\"dama\":\"sama\"}\0");
+	
+	/*
 	Channel::UnixStreamSocket m(4);
 //	new Channel::UnixStreamSocket(channelFd);
 	m.UserOnUnixStreamRead("{\"dama\":\"sama\"}\0");
 	//UnixStreamSocket::UserOnUnixStreamRead("mama\0");
 	//UserOnUnixStreamRead("m");
+	*/
 return nullptr;
 }
 //Listener  li=this->listener;
@@ -88,7 +103,6 @@ return nullptr;
 		std::printf("unixstreamsocket::setlistener()\n");
 
 		this->listener = listener;
-		li=listener;
 		this->listener->mfuck();
 	}
 
@@ -222,8 +236,8 @@ std::printf("unixstreamsocket::useronunixstreamread() %s\n",k);
 		
 		//this->listener = listener;
 		
-		li->mfuck();
-		//this->listener->mfuck();
+		//li->mfuck();
+		this->listener->mfuck();
 		//this->listener->mfuck();
 	//Loop::OnChannelRequest(Channel::UnixStreamSocket* channel, Channel::Request* request)
 		//Loop::mfuck();
@@ -269,11 +283,11 @@ size_t jsonLen;
 					std::printf("request is not nullptr\n");
 					//request->Reject("Room already exists");
 					// Notify the listener.
-					li->mfuck();
-					li->OnChannelRequest(this,request);
-					//this->listener->OnChannelRequest(this, request);
-					//this->listener->mfuck();
-UnixStreamSocket::fucki(this,request);
+					//->mfuck();
+					//li->OnChannelRequest(this,request);
+					this->listener->OnChannelRequest(this, request);
+					this->listener->mfuck();
+
 					std::printf("Delete the Request.\n");
 					delete request;
 				}
@@ -308,10 +322,7 @@ UnixStreamSocket::fucki(this,request);
 		
 	}
 
-	void UnixStreamSocket::fucki(UnixStreamSocket*channel,Request* request)
-{
 	
-}
 
 	
 	
