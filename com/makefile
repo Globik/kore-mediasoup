@@ -5,8 +5,8 @@ CBINC = -I /home/globik/kore.io_websocket/uv3
 I=$(INC) $(INC_CPPJSON) $(CBINC)
 CBLIB = -Wl,-rpath /home/globik/kore.io_websocket/uv3 -L /home/globik/kore.io_websocket/uv3 -luv_callback
 LIBJSON = -L /home/globik/alikon/node_modules/mediasoup/worker/out/Release -ljsoncpp $(CBLIB)
-
-OB = deplibuv.o Loop.o Room.o handle_UnixStreamSocket.o UnixStreamSocket.o Notifier.o Request.o Logger.o SignalsHandler.o
+#handle_UnixStreamSocket.o
+OB = deplibuv.o Loop.o Room.o  UnixStreamSocket.o Notifier.o Request.o Logger.o SignalsHandler.o
 L = `pkg-config --libs libuv` $(LIBJSON)
 a: Notifier.cpp
 	g++ -std=c++11 $(I) -c Notifier.cpp

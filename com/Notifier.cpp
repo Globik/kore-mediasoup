@@ -16,7 +16,7 @@ namespace Channel
 	void Notifier::Emit(uint32_t targetId, const std::string& event)
 	{
 		//MS_TRACE();
-
+std::printf("Notifier::Emit(uint32_t targetId, const std::string& event)\n");
 		static const Json::StaticString JsonStringTargetId{ "targetId" };
 		static const Json::StaticString JsonStringEvent{ "event" };
 
@@ -31,7 +31,7 @@ namespace Channel
 	void Notifier::Emit(uint32_t targetId, const std::string& event, Json::Value& data)
 	{
 		//MS_TRACE();
-
+std::printf("Notifier::Emit(uint32_t targetId, const std::string& event, Json::Value& data) occured.\n");
 		static const Json::StaticString JsonStringTargetId{ "targetId" };
 		static const Json::StaticString JsonStringEvent{ "event" };
 		static const Json::StaticString JsonStringData{ "data" };
@@ -53,7 +53,7 @@ namespace Channel
 	    size_t binaryLen)
 	{
 		//MS_TRACE();
-
+std::printf("Notifier::EmitWithBinary() occured\n");
 		static const Json::StaticString JsonStringTargetId{ "targetId" };
 		static const Json::StaticString JsonStringEvent{ "event" };
 		static const Json::StaticString JsonStringData{ "data" };

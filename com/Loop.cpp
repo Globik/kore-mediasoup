@@ -20,7 +20,7 @@ Loop::Loop(Channel::UnixStreamSocket* channel) : channel(channel)
 
 	std::printf("Set us as Channel's listener.\n");
 	this->channel->SetListener(this);
-	this->channel->listener->mfuck();
+	//this->channel->listener->mfuck();
 	Loop::mfuck();
 
 	// Create the Notifier instance.
@@ -35,13 +35,14 @@ Loop::Loop(Channel::UnixStreamSocket* channel) : channel(channel)
 
 	std::printf("starting libuv loop\n");
 	deplibuv::runloop();
+	//uv_stop(deplibuv::getloop());
 std::printf("libuv loop ended\n");
 }
 
 Loop::~Loop()
 {
 	std::printf("loop destructer occured\n");
-	//MS_TRACE();
+	MS_TRACE();
 }
 
 void Loop::Close()
@@ -78,6 +79,8 @@ std::printf("loop::close() occured\n");
 
 	// Close the Channel socket.
 	//if (this->channel != nullptr)this->channel->Destroy();
+	//usleep(100000);
+	//uv_stop(deplibuv::getloop());
 }
 
 RTC::Room* Loop::GetRoomFromRequest(Channel::Request* request, uint32_t* roomId)
@@ -99,10 +102,10 @@ std::printf("get room from request\n");
 	if (it != this->rooms.end())
 	{
 		RTC::Room* room = it->second;
-
+std::printf("some room found, giving it pass.\n");
 		return room;
 	}
-
+std::printf("No room found.\n");
 	return nullptr;
 }
 
@@ -198,10 +201,12 @@ void Loop::OnChannelRequest(Channel::UnixStreamSocket* channel, Channel::Request
 
 			try
 			{
+				std::printf("The room must be created.\n");
 				room = new RTC::Room(this, this->notifier, roomId, request->data);
 			}
 			catch (const MediaSoupError& error)
 			{
+				std::printf("Fail to create the room.\n");
 				request->Reject(error.what());
 
 				return;
@@ -210,7 +215,7 @@ void Loop::OnChannelRequest(Channel::UnixStreamSocket* channel, Channel::Request
 			this->rooms[roomId] = room;
 
 			MS_DEBUG_DEV("Room created [roomId:%" PRIu32 "]", roomId);
-
+std::printf("Room created roomId:%" PRIu32 "]\n",roomId);
 			Json::Value data(Json::objectValue);
 
 			// Add `capabilities`.
@@ -296,6 +301,6 @@ void Loop::OnChannelUnixStreamSocketRemotelyClosed(Channel::UnixStreamSocket* /*
 void Loop::OnRoomClosed(RTC::Room* room)
 {
 	MS_TRACE();
-
+std::printf("ON room CLOSED\n");
 	this->rooms.erase(room->roomId);
 }

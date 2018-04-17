@@ -33,6 +33,12 @@ static void exitSuccess();
 static void exitWithError();
 uv_callback_t to_cpp;
 
+void*on_from_cpp(uv_callback_t*cb,void*data){
+std::printf("on_from_cpp occurred!!! => %s\n",(char*)data);
+
+return nullptr;
+}
+
 int main(int argc, char* argv[])
 {
 	// Ensure we are called by our Node library.
@@ -95,7 +101,14 @@ int main(int argc, char* argv[])
 		// Run the Loop.
 //int rc=uv_callback_init(deplibuv::getloop(), &to_cpp, UnixStreamSocket::on_to_cpp, UV_DEFAULT);
 //std::printf("rc to_cpp init: %d\n",rc);
-int rc=uv_callback_fire(&(channel->to_cpp),(void*)"CPP IS a Fucker?", NULL);
+		//"worker.createRoom"
+		static const Json::StaticString JsonStringId{ "id" };
+		static const Json::StaticString JsonStringMethod{ "method" };
+		static const Json::StaticString JsonStringInternal{ "internal" };
+		static const Json::StaticString JsonStringData{ "data" };
+const char*s="{\"mama\":\"papa\"}";
+const char*s1="{\"id\":3444444333,\"method\":\"worker.createRoom\",\"internal\":{\"roomId\":35,\"sister\":\"sister_1\"},\"data\":{\"a\":1}}";
+int rc=uv_callback_fire(&(channel->to_cpp),(void*)s1, NULL);
 std::printf("rc fire %d\n",rc);
 		
 Loop loop(channel);
@@ -117,7 +130,7 @@ void init()
 {
 	MS_TRACE();
 
-	ignoreSignals();
+	//ignoreSignals();
 	deplibuv::printversion();
 
 	// Initialize static stuff.
@@ -177,7 +190,11 @@ void destroy()
 	// Free static stuff.
 	//RTC::DtlsTransport::ClassDestroy();
 	//Utils::Crypto::ClassDestroy();
+	std::printf("destroy()\n");
+	//uv_stop(deplibuv::getloop());
 	deplibuv::classdestroy();
+	//usleep(100000);
+	
 	//DepOpenSSL::ClassDestroy();
 	//DepLibSRTP::ClassDestroy();
 }

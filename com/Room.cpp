@@ -27,7 +27,7 @@ namespace RTC
 	{
 		MS_TRACE();
 
-		// Parse all RTP capabilities.
+		std::printf("Parse all RTP capabilities.\n");
 		{
 			// NOTE: These lines are auto-generated from data/supportedCapabilities.js.
 			const std::string supportedRtpCapabilities =
@@ -82,7 +82,9 @@ namespace RTC
 
 	Room::~Room()
 	{
+		std::printf("Room() destructed?\n");
 		MS_TRACE();
+	
 	}
 
 	void Room::Destroy()
@@ -91,7 +93,7 @@ namespace RTC
 
 		static const Json::StaticString JsonStringClass{ "class" };
 
-		Json::Value eventData(Json::objectValue);
+Json::Value eventData(Json::objectValue);
 std::printf("room::destroy()\n");
 		// Close all the Peers.
 		// NOTE: Upon Peer closure the onPeerClosed() method is called which
@@ -123,7 +125,7 @@ std::printf("room::destroy()\n");
 	Json::Value Room::ToJson() const
 	{
 		MS_TRACE();
-
+std::printf("room::tojson().\n");
 		static const Json::StaticString JsonStringRoomId{ "roomId" };
 		static const Json::StaticString JsonStringCapabilities{ "capabilities" };
 		static const Json::StaticString JsonStringPeers{ "peers" };
@@ -186,7 +188,7 @@ std::printf("room::destroy()\n");
 	void Room::HandleRequest(Channel::Request* request)
 	{
 		MS_TRACE();
-		std::printf("room::handlerequest()\n");
+		std::printf("room::handlerequest()*********************************************************************\n");
 
 		switch (request->methodId)
 		{
