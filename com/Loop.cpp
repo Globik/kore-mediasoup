@@ -44,6 +44,7 @@ Loop::~Loop()
 	std::printf("loop destructer occured llllllllllllllllllllllllloooop destructure\n");
 	MS_TRACE();
 }
+//C wrapper
 
 void Loop::Close()
 {
@@ -88,7 +89,7 @@ std::printf("loop::close() occured\n");
 	//if (this->channel != nullptr)this->channel->Destroy();
 	//usleep(100000);
 	//uv_stop(deplibuv::getloop());
-	this->~Loop();
+	//this->~Loop();
 	//Loop::~Loop(this->channel);
 }
 
@@ -312,4 +313,9 @@ void Loop::OnRoomClosed(RTC::Room* room)
 	MS_TRACE();
 std::printf("ON room CLOSED\n");
 	this->rooms.erase(room->roomId);
+}
+
+void suka(void*fi){
+Loop loop(static_cast<Channel::UnixStreamSocket*>(fi));
+std::printf("SUUUUUUUUUUUUUUUUUUUKA!\n");
 }

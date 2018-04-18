@@ -1,7 +1,8 @@
+#include <unistd.h>
 #include "deplibuv.hpp"
 #include <iostream>
 #include <cstdlib>
-#include <unistd.h>
+
 
 uv_loop_t* deplibuv::loop{nullptr};
 
@@ -45,4 +46,21 @@ std::abort();
 	
 	std::cout << "Loop was allocated?" << std::endl;
 	uv_run(deplibuv::loop,UV_RUN_DEFAULT);
+}
+
+// C wrapper
+void deplibuv_printversion(){
+deplibuv::printversion();
+}
+void class_init(){
+deplibuv::classinit();
+}
+void run_loop(){
+deplibuv::runloop();
+}
+void class_destroy(){
+deplibuv::classdestroy();
+}
+uv_loop_t*get_loopi(){
+return deplibuv::getloop();
 }

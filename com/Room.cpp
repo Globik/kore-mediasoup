@@ -242,3 +242,7 @@ std::printf("room::tojson().\n");
 		}
 	}
 } // namespace RTC
+// C wrapper
+void rtc_room_classinit(){
+RTC::Room::ClassInit();
+}

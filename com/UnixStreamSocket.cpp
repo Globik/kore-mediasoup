@@ -35,7 +35,7 @@ namespace Channel
 		//uv_loop_set_data(mloop,(void*)"some_data");
 		uv_loop_set_data(mloop,(void*)this);
 		
-int rc=uv_callback_init(mloop, &this->to_cpp, UnixStreamSocket::on_to_cpp, UV_DEFAULT);
+int rc=uv_callback_init(mloop, &to_cpp, UnixStreamSocket::on_to_cpp, UV_DEFAULT);
 		std::printf("rc to cpp init: %d\n",rc);
 rc=uv_callback_init(mloop,&from_cpp,on_from_cpp,UV_DEFAULT);
 		std::printf("rc from_cpp init: %d\n",rc);
@@ -370,6 +370,12 @@ size_t jsonLen;
 		}
 	}
 } // namespace Channel
+
+// C wrapper
+void*set_channel(){
+auto* chl = new Channel::UnixStreamSocket(3);
+return chl;
+}
 /*
 ----------------
 	without uv_stop()

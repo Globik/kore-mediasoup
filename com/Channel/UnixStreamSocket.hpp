@@ -1,16 +1,18 @@
 #ifndef MS_CHANNEL_UNIX_STREAM_SOCKET_HPP
 #define MS_CHANNEL_UNIX_STREAM_SOCKET_HPP
+#include "uv_callback.h"
+extern uv_callback_t to_cpp;
+#ifdef __cplusplus
 
 #include "common.hpp"
 #include "Channel/Request.hpp"
-//#include "handles/UnixStreamSocket.hpp"
 
 #include <json/json.h>
-#include "uv_callback.h"
+
 
 namespace Channel
 {
-	class UnixStreamSocket /* : public ::UnixStreamSocket */
+	class UnixStreamSocket
 	{
 	public:
 		class Listener
@@ -34,11 +36,11 @@ namespace Channel
 		//virtual ~Loop();
 
 	public:
-		uv_callback_t to_cpp;
+		//uv_callback_t to_cpp;
 		static void * on_to_cpp(uv_callback_t *callback,void*data);
 		static void * close_work(uv_callback_t*callback,void*data);
 		void SetListener(Listener* listener);
-		//void getListener(
+		
 		void Send(Json::Value& msg);
 		void SendLog(char* nsPayload, size_t nsPayloadLen);
 		void SendBinary(const uint8_t* nsPayload, size_t nsPayloadLen);
@@ -58,5 +60,20 @@ namespace Channel
 		bool closed{ false };
 	};
 } // namespace Channel
-void * on_from_cpp(uv_callback_t *,void*);
+//void * on_from_cpp(uv_callback_t *,void*);
+
+#endif
+//uv_callback_t to_cpp;
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+void * on_from_cpp(uv_callback_t*,void*);
+void*set_channel();
+	
+#ifdef __cplusplus
+}
+#endif
+
 #endif

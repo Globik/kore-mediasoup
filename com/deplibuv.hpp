@@ -2,6 +2,7 @@
 #define LIBUV_HPP
 #include <uv.h>
 
+#ifdef __cplusplus
 #include <iostream>
 
 #include <string>
@@ -25,4 +26,22 @@ return deplibuv::loop;
 inline uint64_t deplibuv::gettime(){
 return uv_now(deplibuv::loop);
 }
+
+#endif
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+void deplibuv_printversion();
+void class_init();
+void run_loop();
+void class_destroy();
+uv_loop_t*get_loopi();
+#ifdef __cplusplus
+}
+#endif
+
+
+
 #endif
