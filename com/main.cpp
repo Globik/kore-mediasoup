@@ -35,12 +35,17 @@ uv_callback_t to_cpp;
 
 void*on_from_cpp(uv_callback_t*cb,void*data){
 std::printf("on_from_cpp occurred!!! => %s\n",(char*)data);
-
+char*s=(char*)data;
+if(!strcmp(s,"exit")){std::printf("EXIT!!!\n");uv_stop(deplibuv::getloop());}
 return nullptr;
+}
+void han(){
+std::printf("at exit ocured.===========================================%%%%\n");
 }
 
 int main(int argc, char* argv[])
 {
+	
 	// Ensure we are called by our Node library.
 /*	if (argc == 1 || (std::getenv("MEDIASOUP_CHANNEL_FD") == nullptr))
 	{
@@ -110,9 +115,9 @@ const char*s="{\"mama\":\"papa\"}";
 const char*s1="{\"id\":3444444333,\"method\":\"worker.createRoom\",\"internal\":{\"roomId\":35,\"sister\":\"sister_1\"},\"data\":{\"a\":1}}";
 int rc=uv_callback_fire(&(channel->to_cpp),(void*)s1, NULL);
 std::printf("rc fire %d\n",rc);
-		
+//std::atexit(han);		
 Loop loop(channel);
-
+//atexit(han);
 		// Loop ended.
 		destroy();
 		exitSuccess();
@@ -120,7 +125,7 @@ Loop loop(channel);
 	catch (const MediaSoupError& error)
 	{
 		MS_ERROR_STD("failure exit: %s", error.what());
-
+std::printf("Some error occured in main mediasoup err catch\n");
 		destroy();
 		exitWithError();
 	}
@@ -129,8 +134,8 @@ Loop loop(channel);
 void init()
 {
 	MS_TRACE();
-
-	//ignoreSignals();
+std::atexit(han);
+	ignoreSignals();
 	deplibuv::printversion();
 
 	// Initialize static stuff.
@@ -201,15 +206,15 @@ void destroy()
 
 void exitSuccess()
 {
-	// Wait a bit so peding messages to stdout/Channel arrive to the main process.
+	std::printf(" SUCCESS: Wait a bit so peding messages to stdout/Channel arrive to the main process.\n");
 	usleep(100000);
-	// And exit with success status.
+	std::printf("SUCCESS: And exit with success status.\n");
 	std::_Exit(EXIT_SUCCESS);
 }
 
 void exitWithError()
 {
-	// Wait a bit so peding messages to stderr arrive to the main process.
+	std::printf("error Wait a bit so peding messages to stderr arrive to the main process.\n");
 	usleep(100000);
 	// And exit with error status.
 	std::_Exit(EXIT_FAILURE);

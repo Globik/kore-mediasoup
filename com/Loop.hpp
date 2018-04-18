@@ -16,7 +16,8 @@ class Loop : public SignalsHandler::Listener,
 {
 public:
 	explicit Loop(Channel::UnixStreamSocket* channel);
-	~Loop() override;
+	~Loop();// override;
+	//Channel::~UnixStreamSocket() override;
 
 private:
 	void Close();

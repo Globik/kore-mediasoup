@@ -10,10 +10,11 @@
 #include <cstring> // std::memmove()
 #include <sstream> // std::ostringstream
 #include <string>
+#include <unistd.h> //usleep
 extern "C" {
 //#include <netstring.h>
 }
-uv_callback_t from_cpp;
+uv_callback_t from_cpp,stop_w;
 namespace Channel
 {
 	/* Static. */
@@ -38,6 +39,8 @@ int rc=uv_callback_init(mloop, &this->to_cpp, UnixStreamSocket::on_to_cpp, UV_DE
 		std::printf("rc to cpp init: %d\n",rc);
 rc=uv_callback_init(mloop,&from_cpp,on_from_cpp,UV_DEFAULT);
 		std::printf("rc from_cpp init: %d\n",rc);
+		rc=uv_callback_init(mloop,&stop_w,UnixStreamSocket::close_work,UV_DEFAULT);
+		std::printf("rc stop_w init: %d\n",rc);
 		
 		// Create the JSON reader.
 		{
@@ -70,11 +73,26 @@ rc=uv_callback_init(mloop,&from_cpp,on_from_cpp,UV_DEFAULT);
 
 	UnixStreamSocket::~UnixStreamSocket()
 	{
+		//usleep(100000);
+//uv_stop(deplibuv::getloop());
+		//int r=uv_callback_fire(&stop_w,nullptr,nullptr);
+		//std::printf("rc fire stop_worker: %d\n",r);
+		int r=uv_callback_fire(&from_cpp,(void*)"exit",NULL);
+		std::printf("rc fire from_cpp: %d\n",r);
+		//usleep(20000);
 MS_TRACE_STD();
 std::printf("What the fuck in destractor in unixstreamsocket?jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj\n");
 		delete this->jsonReader;
 		delete this->jsonWriter;
+		//usleep(100000);
+//uv_stop(deplibuv::getloop());
+		
 	}
+void * UnixStreamSocket::close_work(uv_callback_t*callback,void*data){
+	std::printf("on stop work occured\n");
+uv_stop(((uv_handle_t*)callback)->loop);
+	return nullptr;
+}
 	
 void * UnixStreamSocket::on_to_cpp(uv_callback_t*callback,void*data)
 {
@@ -352,3 +370,53 @@ size_t jsonLen;
 		}
 	}
 } // namespace Channel
+/*
+----------------
+	without uv_stop()
+--------------------
+Csignal INT received, exiting
+loop::close() occured
+room::destroy()
+Notifier::Emit(uint32_t targetId, const std::string& event, Json::Value& data) occured.
+UnixStreamSocket::Send(Json) occured
+{
+	"data" : 
+	{
+		"class" : "Room"
+	},
+	"event" : "close",
+	"targetId" : 35
+}
+rc fire from_cpp: 0
+ON room CLOSED
+Room() destructed?
+What the fuck in destractor in unixstreamsocket?jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
+on_from_cpp occurred!!! => HALLO from cpp!!!
+
+	------
+	here with uv_stop(loop);
+	-------
+Csignal INT received, exiting
+loop::close() occured
+room::destroy()
+Notifier::Emit(uint32_t targetId, const std::string& event, Json::Value& data) occured.
+UnixStreamSocket::Send(Json) occured
+{
+	"data" : 
+	{
+		"class" : "Room"
+	},
+	"event" : "close",
+	"targetId" : 35
+}
+rc fire from_cpp: 0
+ON room CLOSED
+Room() destructed?
+What the fuck in destractor in unixstreamsocket?jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
+libuv loop ended
+destroy()
+Loop was destroyd?
+*/
+
+
+

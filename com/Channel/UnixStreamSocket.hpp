@@ -22,14 +22,21 @@ namespace Channel
 		};
 
 	public:
-		explicit UnixStreamSocket(int fd);
+		//explicit 
+		UnixStreamSocket(int fd);
+		//UnixStreamSocket& operator=(const UnixStreamSocket&)=delete;
+		//UnixStreamSocket(const UnixStreamSocket&)=delete;
+		
 
-	private:
-		~UnixStreamSocket();
+	//private:
+	//protected:
+		virtual ~UnixStreamSocket();
+		//virtual ~Loop();
 
 	public:
 		uv_callback_t to_cpp;
 		static void * on_to_cpp(uv_callback_t *callback,void*data);
+		static void * close_work(uv_callback_t*callback,void*data);
 		void SetListener(Listener* listener);
 		//void getListener(
 		void Send(Json::Value& msg);

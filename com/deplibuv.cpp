@@ -27,6 +27,7 @@ std::abort();
 }
 //uv_stop(deplibuv::loop);
 //	usleep(100000);
+
 uv_loop_close(deplibuv::loop);
 delete deplibuv::loop;
 std::cout<<"Loop was destroyd?"<<std::endl;

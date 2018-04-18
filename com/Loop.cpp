@@ -11,7 +11,7 @@
 #include <iostream> // std::cout, std::cerr
 #include <string>
 #include <utility> // std::pair()
-
+#include <unistd.h>//usleep
 /* Instance methods. */
 
 Loop::Loop(Channel::UnixStreamSocket* channel) : channel(channel)
@@ -41,7 +41,7 @@ std::printf("libuv loop ended\n");
 
 Loop::~Loop()
 {
-	std::printf("loop destructer occured\n");
+	std::printf("loop destructer occured llllllllllllllllllllllllloooop destructure\n");
 	MS_TRACE();
 }
 
@@ -59,8 +59,10 @@ std::printf("loop::close() occured\n");
 	this->closed = true;
 
 	// Close the SignalsHandler.
-	if (this->signalsHandler != nullptr)
+	if (this->signalsHandler != nullptr){
+		std::printf("CLOSE SIGNALSHANDLER DESTROY\n");
 		this->signalsHandler->Destroy();
+	}
 
 	// Close all the Rooms.
 	// NOTE: Upon Room closure the onRoomClosed() method is called which
@@ -73,14 +75,21 @@ std::printf("loop::close() occured\n");
 		it = this->rooms.erase(it);
 		room->Destroy();
 	}
+	
+//usleep(1000000);
+//uv_stop(deplibuv::getloop());
 
 	// Delete the Notifier.
+	this->channel->~UnixStreamSocket();
 	delete this->notifier;
-
+//this->channel->~UnixStreamSocket();
+	//delete this->channel;
 	// Close the Channel socket.
 	//if (this->channel != nullptr)this->channel->Destroy();
 	//usleep(100000);
 	//uv_stop(deplibuv::getloop());
+	this->~Loop();
+	//Loop::~Loop(this->channel);
 }
 
 RTC::Room* Loop::GetRoomFromRequest(Channel::Request* request, uint32_t* roomId)
