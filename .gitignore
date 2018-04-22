@@ -1,2 +1,3 @@
 worker/out
 worker/scripts
+com-1/*.o

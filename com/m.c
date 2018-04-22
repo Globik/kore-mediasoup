@@ -34,7 +34,8 @@ uv_callback_t to_cpp;
 void*on_from_cpp(uv_callback_t*cb,void*data){
 printf("on_from_cpp occurred!!! => %s\n",(char*)data);
 char*s=(char*)data;
-if(!strcmp(s,"exit")){printf("EXIT!!!\n");
+if(!strcmp(s,"exit")){
+printf("EXIT!!!\n");
 uv_stop(get_loopi());				 
 }
 return NULL;
