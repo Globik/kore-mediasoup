@@ -24,7 +24,7 @@ extern "C" {
 }
 */
 
-uv_callback_t from_cpp;
+uv_callback_t from_cpp,cb_result;
 
 namespace Channel
 {
@@ -43,10 +43,13 @@ namespace Channel
 uv_loop_t*mloop=DepLibUV::GetLoop();
 uv_loop_set_data(mloop,(void*)this);
 		
-int rc=uv_callback_init(mloop, &to_cpp, UnixStreamSocket::on_to_cpp, UV_COALESCE);
+int rc=uv_callback_init(mloop, &to_cpp, UnixStreamSocket::on_to_cpp, UV_DEFAULT/*COALESCE*/);
 std::printf("uv_callback_t &to_cpp init: %d\n",rc);
 rc=uv_callback_init(mloop,&from_cpp,on_from_cpp,UV_DEFAULT);
 std::printf("uv_callback_t &from_cpp init: %d\n",rc);
+		
+		rc=uv_callback_init(mloop,&cb_result,on_result,UV_DEFAULT);
+std::printf("uv_callback_t &cb_result init: %d\n",rc);
 		// Create the JSON reader.
 		{
 			Json::CharReaderBuilder builder;
@@ -155,14 +158,19 @@ return nullptr;
 	void UnixStreamSocket::SendLog(char* nsPayload, size_t nsPayloadLen)
 	{
 		std::printf("sendlog()\n");
-		std::printf("Out in: %s\n",nsPayload);
-		if (this->closed)
-			return;
+		std::printf("Out in: %s :: %d\n", nsPayload,nsPayloadLen);
+		
+		if (this->closed){std::printf("it looks like this->closed is true\n");return;}
+		/*
+		char*su=strdup(nsPayload);
+		int r=uv_callback_fire(&from_cpp,su, &cb_result);
+		std::printf("uv_callback_t &from_cpp fire: %d\n",r);
+		*/
+/*
+		
 
-		// MS_TRACE_STD();
-
-		//size_t nsNumLen;
-		//size_t nsLen;
+		size_t nsNumLen;
+		size_t nsLen;
 
 		if (nsPayloadLen > MessageMaxSize)
 		{
@@ -171,11 +179,12 @@ return nullptr;
 			return;
 		}
 		
-		int r=uv_callback_fire(&from_cpp,(void*)nsPayload,NULL);
-		std::printf("uv_callback_t &from_cpp fire: %d\n",r);
-/*
+		//int r=uv_callback_fire(&from_cpp,(void*)nsPayload,NULL);
+		//std::printf("uv_callback_t &from_cpp fire: %d\n",r);
+
 		if (nsPayloadLen == 0)
 		{
+			std::printf("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO\n");
 			nsNumLen       = 1;
 			WriteBuffer[0] = '0';
 			WriteBuffer[1] = ':';
@@ -187,11 +196,19 @@ return nullptr;
 			std::sprintf(reinterpret_cast<char*>(WriteBuffer), "%zu:", nsPayloadLen);
 			std::memcpy(WriteBuffer + nsNumLen + 1, nsPayload, nsPayloadLen);
 			WriteBuffer[nsNumLen + nsPayloadLen + 1] = ',';
+		//	int r=uv_callback_fire(&from_cpp,(void*)nsPayload, &cb_result);
+		//std::printf("uv_callback_t &from_cpp fire: %d\n",r);
+		//	usleep(10000);
+			//return;
+
 		}
 
 		nsLen = nsNumLen + nsPayloadLen + 2;
+//int r=uv_callback_fire(&from_cpp,(void*)WriteBuffer, &cb_result);
+	//	std::printf("uv_callback_t &from_cpp fire: %d\n",r);
 
-		Write(WriteBuffer, nsLen);
+		//Write(WriteBuffer, nsLen);
+		
 		*/
 	}
 

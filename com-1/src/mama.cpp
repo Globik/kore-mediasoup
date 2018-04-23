@@ -32,10 +32,24 @@ static void destroy();
 static void exitSuccess();
 static void exitWithError();
 void*on_from_cpp(uv_callback_t*,void*);
+void*on_result(uv_callback_t*,void*);
 void*on_from_cpp(uv_callback_t*,void*data){
 std::printf("ON_FROM_CPP: %s\n",(char*)data);
-return nullptr;
+if(!strcmp((char*)data,"exit")){
+uv_stop(DepLibUV::GetLoop());
+	return nullptr;
 }
+free(data);
+data=nullptr;
+return (void*)"mli";
+}
+void*on_result(uv_callback_t*cb,void*data){
+std::printf("on result occured.\n");
+
+return NULL;
+}
+const char*room_create_str="{\"id\":3444444333,\"method\":\"worker.createRoom\",\"internal\":{\"roomId\":35,\"sister\":\"sister_1\"},\"data\":{\"a\":1}}";
+
 int main(int argc, char* argv[])
 {
 	// Ensure we are called by our Node library.
@@ -95,6 +109,8 @@ int main(int argc, char* argv[])
 		init();
 
 		// Run the Loop.
+	//	int r=uv_callback_fire(&to_cpp,(void*)room_create_str, NULL);
+//std::printf("uv_callback_t &to_cpp fire %d\n",r);
 		Loop loop(channel);
 
 		// Loop ended.

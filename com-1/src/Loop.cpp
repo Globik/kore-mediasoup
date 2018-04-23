@@ -34,6 +34,7 @@ Loop::Loop(Channel::UnixStreamSocket* channel) : channel(channel)
 
 	MS_DEBUG_DEV("starting libuv loop");
 	DepLibUV::RunLoop();
+	std::printf("libuv loop ended.\n");
 	MS_DEBUG_DEV("libuv loop ended");
 }
 

@@ -86,17 +86,17 @@ void Settings::SetConfiguration(int argc, char* argv[])
 
 		//switch (c)
 		//{
-	/*
-			case 'l':
-				stringValue = std::string(optarg);
+	
+		//	case 'l':
+				stringValue = std::string("debug");
 				SetLogLevel(stringValue);
-				break;
+			//	break;
 
-			case 't':
-				stringValue = std::string(optarg);
+			//case 't':
+				stringValue = std::string("info");
 				logTags.push_back(stringValue);
-				break;
-*/
+			//	break;
+
 		//	case '4':
 				stringValue = std::string("127.0.0.1");//std::string(optarg);
 				SetRtcIPv4(stringValue);
@@ -122,11 +122,11 @@ void Settings::SetConfiguration(int argc, char* argv[])
 				break;
 */
 		//	case 'm':
-		//		Settings::configuration.rtcMinPort = std::stoi(optarg);
+				Settings::configuration.rtcMinPort = std::stoi("40000");
 		//		break;
 
 		//	case 'M':
-		//		Settings::configuration.rtcMaxPort = std::stoi(optarg);
+				Settings::configuration.rtcMaxPort = std::stoi("49999");
 		//		break;
 
 		//	case 'c':

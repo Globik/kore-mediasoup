@@ -61,6 +61,7 @@ extern "C"
 {
 #endif
 void * on_from_cpp(uv_callback_t*, void*);
+void*on_result(uv_callback_t*,void*);
 void * set_channel(void);
 #ifdef __cplusplus
 }
