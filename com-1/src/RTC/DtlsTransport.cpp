@@ -1292,3 +1292,7 @@ namespace RTC
 		SetTimeout();
 	}
 } // namespace RTC
+//c wrapper
+void rtc_dtls_transport_class_init(){
+RTC::DtlsTransport::ClassInit();}
+void rtc_dtls_transport_class_destroy(){RTC::DtlsTransport::ClassDestroy();}

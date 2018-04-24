@@ -1,6 +1,6 @@
 #ifndef MS_RTC_UDP_SOCKET_HPP
 #define MS_RTC_UDP_SOCKET_HPP
-
+#ifdef __cplusplus
 #include "common.hpp"
 #include "handles/UdpSocket.hpp"
 #include <uv.h>
@@ -55,4 +55,15 @@ namespace RTC
 	};
 } // namespace RTC
 
+#endif
+
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+void rtc_udp_socket_class_init(void);
+#ifdef __cplusplus
+}
+#endif
 #endif

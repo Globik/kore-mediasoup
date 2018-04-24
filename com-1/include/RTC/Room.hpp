@@ -1,6 +1,6 @@
 #ifndef MS_RTC_ROOM_HPP
 #define MS_RTC_ROOM_HPP
-
+#ifdef __cplusplus
 #include "common.hpp"
 #include "Channel/Notifier.hpp"
 #include "Channel/Request.hpp"
@@ -105,4 +105,14 @@ namespace RTC
 	}
 } // namespace RTC
 
+#endif
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+void rtc_room_class_init(void);
+#ifdef __cplusplus
+}
+#endif
 #endif

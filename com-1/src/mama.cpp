@@ -69,6 +69,7 @@ int main(int argc, char* argv[])
 
 	// Set the Channel socket (this will be handled and deleted by the Loop).
 	auto* channel = new Channel::UnixStreamSocket(channelFd);
+//	void set_loop_channel(void*fi)
 
 	// Initialize the Logger.
 	Logger::Init(id, channel);
@@ -136,10 +137,14 @@ void init()
 	// Initialize static stuff.
 	DepOpenSSL::ClassInit();
 	DepLibSRTP::ClassInit();
+	
 	Utils::Crypto::ClassInit();
+	
 	RTC::UdpSocket::ClassInit();
 	RTC::TcpServer::ClassInit();
+	
 	RTC::DtlsTransport::ClassInit();
+	
 	RTC::SrtpSession::ClassInit();
 	RTC::Room::ClassInit();
 }

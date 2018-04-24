@@ -64,3 +64,5 @@ void DepLibSRTP::ClassDestroy()
 	if (DepLibSRTP::IsError(err))
 		MS_ERROR("srtp_shutdown() failed: %s", DepLibSRTP::GetErrorString(err));
 }
+void deplibsrtp_class_init(){DepLibSRTP::ClassInit();}
+void deplibsrtp_class_destroy(){DepLibSRTP::ClassDestroy();}

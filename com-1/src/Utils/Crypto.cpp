@@ -103,3 +103,6 @@ namespace Utils
 		return Crypto::hmacSha1Buffer;
 	}
 } // namespace Utils
+
+void utils_crypto_class_init(){Utils::Crypto::ClassInit();};
+void utils_crypto_class_destroy(){Utils::Crypto::ClassDestroy();}

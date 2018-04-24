@@ -879,3 +879,7 @@ namespace RTC
 		}
 	}
 } // namespace RTC
+
+//c wrapper
+void rtc_room_class_init(){
+RTC::Room::ClassInit();}

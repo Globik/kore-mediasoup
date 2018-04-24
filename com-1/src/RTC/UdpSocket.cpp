@@ -254,3 +254,5 @@ namespace RTC
 			RTC::UdpSocket::availableIPv6Ports[this->localPort] = true;
 	}
 } // namespace RTC
+// c wrapper
+void rtc_udp_socket_class_init(){RTC::UdpSocket::ClassInit();}

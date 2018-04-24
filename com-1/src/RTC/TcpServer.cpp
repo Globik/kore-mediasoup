@@ -271,3 +271,5 @@ namespace RTC
 			RTC::TcpServer::availableIPv6Ports[this->localPort] = true;
 	}
 } // namespace RTC
+// c wrapper
+void rtc_tcp_server_class_init(){RTC::TcpServer::ClassInit();}

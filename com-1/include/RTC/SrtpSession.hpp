@@ -1,6 +1,6 @@
 #ifndef MS_RTC_SRTP_SESSION_HPP
 #define MS_RTC_SRTP_SESSION_HPP
-
+#ifdef __cplusplus
 #include "common.hpp"
 #include <srtp.h>
 
@@ -56,4 +56,14 @@ namespace RTC
 	}
 } // namespace RTC
 
+#endif
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+void rtc_srtp_session_class_init(void);
+#ifdef __cplusplus
+}
+#endif
 #endif

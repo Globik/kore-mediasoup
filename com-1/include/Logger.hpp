@@ -65,7 +65,7 @@
 
 #ifndef MS_LOGGER_HPP
 #define MS_LOGGER_HPP
-
+#ifdef __cplusplus
 #include "common.hpp"
 #include "LogLevel.hpp"
 #include "Settings.hpp"
@@ -375,5 +375,17 @@ public:
 #endif
 
 // clang-format on
+
+#endif
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+void logger_init(char*,void*);
+//Logger::Init(id, channel);
+#ifdef __cplusplus
+}
+#endif
 
 #endif

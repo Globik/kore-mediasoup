@@ -39,6 +39,8 @@ std::map<LogLevel, std::string> Settings::logLevel2String =
 
 /* Class methods. */
 
+
+
 void Settings::SetConfiguration(int argc, char* argv[])
 {
 	MS_TRACE();
@@ -656,3 +658,7 @@ bool isBindableIp(const std::string& ip, int family, int* bindErrno)
 
 	return success;
 }
+
+// c wrapper
+void settings_set_configuration(int argc,char* argv[]){Settings::SetConfiguration(argc,argv);}
+void settings_print_configuration(){Settings::PrintConfiguration();}

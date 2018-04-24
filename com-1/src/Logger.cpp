@@ -25,3 +25,14 @@ void Logger::Init(const std::string& id)
 
 	MS_TRACE();
 }
+
+void logger_init(char*s,void*fi){
+Logger::Init(s,static_cast<Channel::UnixStreamSocket*>(fi));
+}
+/*
+void set_loop_channel(void*fi){
+Loop loop(static_cast<Channel::UnixStreamSocket*>(fi));
+std::printf("The loop should be ending now!\n");
+
+}
+*/

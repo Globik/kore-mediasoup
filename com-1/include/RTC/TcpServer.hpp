@@ -1,6 +1,6 @@
 #ifndef MS_RTC_TCP_SERVER_HPP
 #define MS_RTC_TCP_SERVER_HPP
-
+#ifdef __cplusplus
 #include "common.hpp"
 #include "RTC/TcpConnection.hpp"
 #include "handles/TcpConnection.hpp"
@@ -57,4 +57,14 @@ namespace RTC
 	};
 } // namespace RTC
 
+#endif
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+void rtc_tcp_server_class_init(void);
+#ifdef __cplusplus
+}
+#endif
 #endif

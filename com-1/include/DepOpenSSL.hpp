@@ -1,11 +1,11 @@
 #ifndef MS_DEP_OPENSSL_HPP
 #define MS_DEP_OPENSSL_HPP
-
+#include <uv.h>
+#ifdef __cplusplus
 #include "common.hpp"
 #include <openssl/crypto.h>
 #include <openssl/ssl.h>
-#include <uv.h>
-
+//#include <uv.h>
 /* OpenSSL doc: struct CRYPTO_dynlock_value has to be defined by the application. */
 struct CRYPTO_dynlock_value // NOLINT
 {
@@ -30,4 +30,16 @@ private:
 	static uint32_t numMutexes;
 };
 
+#endif
+
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+void depopenssl_class_init(void);
+void depopenssl_class_destroy(void);
+#ifdef __cplusplus
+}
+#endif
 #endif

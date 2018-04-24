@@ -1,6 +1,6 @@
 #ifndef MS_RTC_DTLS_TRANSPORT_HPP
 #define MS_RTC_DTLS_TRANSPORT_HPP
-
+#ifdef __cplusplus
 #include "common.hpp"
 #include "RTC/SrtpSession.hpp"
 #include "handles/Timer.hpp"
@@ -240,4 +240,15 @@ namespace RTC
 	}
 } // namespace RTC
 
+#endif
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+void rtc_dtls_transport_class_init(void);
+void rtc_dtls_transport_class_destroy(void);
+#ifdef __cplusplus
+}
+#endif
 #endif

@@ -1,8 +1,10 @@
 #ifndef MS_UTILS_HPP
 #define MS_UTILS_HPP
-
-#include "common.hpp"
 #include <openssl/hmac.h>
+
+#ifdef __cplusplus
+#include "common.hpp"
+
 #include <cstring> // std::memcmp(), std::memcpy()
 #include <string>
 #include <sys/time.h> // gettimeofday
@@ -312,4 +314,15 @@ namespace Utils
 	}
 }
 
+#endif
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+void utils_crypto_class_init(void);
+void utils_crypto_class_destroy(void);
+#ifdef __cplusplus
+}
+#endif
 #endif

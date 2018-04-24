@@ -151,3 +151,6 @@ void DepOpenSSL::DynDestroyFunction(CRYPTO_dynlock_value* v, const char* /*file*
 	uv_mutex_destroy(&v->mutex);
 	delete v;
 }
+
+void depopenssl_class_init(){DepOpenSSL::ClassInit();}
+void depopenssl_class_destroy(){DepOpenSSL::ClassDestroy();}

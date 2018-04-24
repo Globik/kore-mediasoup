@@ -216,3 +216,6 @@ namespace RTC
 		return true;
 	}
 } // namespace RTC
+//c wrapper
+void rtc_srtp_session_class_init(){
+RTC::SrtpSession::ClassInit();}

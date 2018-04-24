@@ -2,9 +2,10 @@
 #ifndef MS_DEP_LIBUV_HPP
 #define MS_DEP_LIBUV_HPP
 
-#include "common.hpp"
+
 #include <uv.h>
 #ifdef __cplusplus
+#include "common.hpp"
 #include <iostream>
 
 class DepLibUV
