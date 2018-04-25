@@ -1,12 +1,13 @@
 # kore-mediasoup
-It's time to hack [mediasoup](https://github.com/versatica/mediasoup) - Cutting Edge WebRTC Videoconferencing written in C++
-Based on mdiasoup [Version 1.2.8](https://github.com/versatica/mediasoup/tree/1.2.8)
+It's time to hack [mediasoup](https://github.com/versatica/mediasoup) - Cutting Edge WebRTC Videoconferencing written in C++.
+
+Based on [Version 1.2.8](https://github.com/versatica/mediasoup/tree/1.2.8)
 
 # The goal
 
-I just want to get it work from within [kore](https://github.com/jorisvink/kore)  a web framework(written in C) in a kore's dedicated thread.
+I just want to get it work from within a [kore](https://github.com/jorisvink/kore)  web framework(written in C) in a dedicated thread.
 
-Wanna port the mediasoup's [javascript API](https://github.com/versatica/mediasoup/tree/1.2.8/lib) to the C part.
+As such I wanna port the mediasoup's [javascript API](https://github.com/versatica/mediasoup/tree/1.2.8/lib) to the C part.
 
 ## Work in progress:
 
@@ -16,4 +17,4 @@ It's here:
 
 So far so good, I have replaced the UnixStreamSocket interface with the [uv\_callback](https://github.com/litesync/uv_callback) interface.
 
-In plan, for the binary streaming from the mediasoup lib stuff to use the build-in kore's socket.
+In plan, to use the kore's build-in socket for some binary streams from the mediasoup's worker.
