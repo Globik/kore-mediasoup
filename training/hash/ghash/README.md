@@ -1,0 +1,1 @@
+glib hash table is more preferable, well documented and there are a lot of examples and practical use cases on internet.
