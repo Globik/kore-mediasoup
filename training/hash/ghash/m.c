@@ -65,7 +65,7 @@ if(ch == NULL) exit(1);
 ch->open(&broom, NULL);
 printf("ch->a: %d\n", ch->a);
 printf("p %p\n", ch);
-GHashTable * rooms=g_hash_table_new_full(g_str_hash, g_str_equal, NULL, (GDestroyNotify)on_remove);
+GHashTable * rooms = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, (GDestroyNotify)on_remove);
 	  g_hash_table_insert(rooms,"dummy_key", ch);
 printf("there are %d keys in the hash.\n", g_hash_table_size(rooms));
 channel * result = g_hash_table_lookup(rooms, "dummy_key");
