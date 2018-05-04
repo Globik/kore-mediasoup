@@ -1,0 +1,326 @@
+# ONE WAY CONNECT TO BE BROADCASTER ONE TO MANY
+
+***************************************************
+****************************************************
+TO CPP_ :
+{"id":84851695,"method":"room.createPeer","internal":{"roomId":15244254,"peerId":60866009,"peerName":"rJjqEkcaG"}}
+***************************************************
+****************************************************
+
+***************************************************
+****************************************************
+TO CPP_ :
+{"id":63530845,"method":"peer.setCapabilities",
+"internal":{"roomId":15244254,"peerId":60866009,"peerName":"rJjqEkcaG"},
+"data":
+{"codecs":[{"kind":"audio","name":"audio/opus","payloadType":111,"clockRate":48000,
+"rtcpFeedback":[{"type":"transport-cc"}],"parameters":{"minptime":10,"useInbandFec":1},"numChannels":2},
+{"kind":"audio","name":"audio/ISAC","payloadType":103,"clockRate":16000,"rtcpFeedback":[],"parameters":{}},
+{"kind":"audio","name":"audio/ISAC","payloadType":104,"clockRate":32000,"rtcpFeedback":[],"parameters":{}},
+{"kind":"audio","name":"audio/G722","payloadType":9,"clockRate":8000,"rtcpFeedback":[],"parameters":{}},
+{"kind":"audio","name":"audio/PCMU","payloadType":0,"clockRate":8000,"rtcpFeedback":[],"parameters":{}},
+{"kind":"audio","name":"audio/PCMA","payloadType":8,"clockRate":8000,"rtcpFeedback":[],"parameters":{}},
+{"kind":"audio","name":"audio/CN","payloadType":106,"clockRate":32000,"rtcpFeedback":[],"parameters":{}},
+{"kind":"audio","name":"audio/CN","payloadType":105,"clockRate":16000,"rtcpFeedback":[],"parameters":{}},
+{"kind":"audio","name":"audio/CN","payloadType":13,"clockRate":8000,"rtcpFeedback":[],"parameters":{}},
+{"kind":"audio","name":"audio/telephone-event","payloadType":110,"clockRate":48000,"rtcpFeedback":[],"parameters":{}},
+{"kind":"audio","name":"audio/telephone-event","payloadType":112,"clockRate":32000,"rtcpFeedback":[],"parameters":{}},
+{"kind":"audio","name":"audio/telephone-event","payloadType":113,"clockRate":16000,"rtcpFeedback":[],"parameters":{}},
+{"kind":"audio","name":"audio/telephone-event","payloadType":126,"clockRate":8000,"rtcpFeedback":[],"parameters":{}},
+{"kind":"video","name":"video/VP8","payloadType":96,"clockRate":90000,"rtcpFeedback":[{"type":"goog-remb"},
+{"type":"transport-cc"},{"type":"ccm","parameter":"fir"},{"type":"nack"},{"type":"nack","parameter":"pli"}],"parameters":{}},
+{"kind":"video","name":"video/rtx","payloadType":97,"clockRate":90000,"rtcpFeedback":[],"parameters":{"apt":96}},
+{"kind":"video","name":"video/VP9","payloadType":98,"clockRate":90000,"rtcpFeedback":[{"type":"goog-remb"},
+{"type":"transport-cc"},{"type":"ccm","parameter":"fir"},{"type":"nack"},{"type":"nack","parameter":"pli"}],"parameters":{}},
+{"kind":"video","name":"video/rtx","payloadType":99,"clockRate":90000,"rtcpFeedback":[],"parameters":{"apt":98}},
+{"kind":"video","name":"video/H264","payloadType":100,"clockRate":90000,"rtcpFeedback":[{"type":"goog-remb"},
+{"type":"transport-cc"},{"type":"ccm","parameter":"fir"},{"type":"nack"},{"type":"nack","parameter":"pli"}],
+"parameters":{"levelAsymmetryAllowed":1,"packetizationMode":1,"profileLevelId":"42001f"}},
+{"kind":"video","name":"video/rtx","payloadType":101,"clockRate":90000,"rtcpFeedback":[],"parameters":{"apt":100}},
+{"kind":"video","name":"video/H264","payloadType":102,"clockRate":90000,"rtcpFeedback":[{"type":"goog-remb"},{"type":"transport-cc"},
+{"type":"ccm","parameter":"fir"},{"type":"nack"},{"type":"nack","parameter":"pli"}],
+"parameters":{"levelAsymmetryAllowed":1,"packetizationMode":1,"profileLevelId":"42e01f"}},
+{"kind":"video","name":"video/rtx","payloadType":124,"clockRate":90000,"rtcpFeedback":[],"parameters":{"apt":102}},
+{"kind":"video","name":"video/rtx","payloadType":123,"clockRate":90000,"rtcpFeedback":[],"parameters":{"apt":127}}],
+"headerExtensions":[{"kind":"audio","uri":"urn:ietf:params:rtp-hdrext:ssrc-audio-level","preferredId":1},
+{"kind":"video","uri":"urn:ietf:params:rtp-hdrext:toffset","preferredId":2},
+{"kind":"video","uri":"http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time","preferredId":3},
+{"kind":"video","uri":"urn:3gpp:video-orientation","preferredId":4},
+{"kind":"video","uri":"http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01","preferredId":5},
+{"kind":"video","uri":"http://www.webrtc.org/experiments/rtp-hdrext/playout-delay","preferredId":6},
+{"kind":"video","uri":"http://www.webrtc.org/experiments/rtp-hdrext/video-content-type","preferredId":7},
+{"kind":"video","uri":"http://www.webrtc.org/experiments/rtp-hdrext/video-timing","preferredId":8}],"fecMechanisms":[]}}
+***************************************************
+****************************************************
+***************************************************
+****************************************************
+from cpp_ [IN]:
+{"accepted":true,"data":{},"id":84851695}
+***************************************************
+****************************************************
+ON NEW PEER:  60866009
+***************************************************
+****************************************************
+from cpp_ [IN]:
+{"accepted":true,
+"data":
+{"codecs":[
+{"clockRate":48000,"kind":"audio","name":"audio/opus","numChannels":2,"parameters":{"minptime":10,"useInbandFec":1},
+"payloadType":100,"rtcpFeedback":[]},{"clockRate":8000,"kind":"audio","name":"audio/PCMU","parameters":{},
+"payloadType":101,"rtcpFeedback":[]},{"clockRate":90000,"kind":"video","name":"video/VP8","parameters":{},
+"payloadType":102,"rtcpFeedback":[{"parameter":null,"type":"goog-remb"},{"parameter":"fir","type":"ccm"},
+{"parameter":null,"type":"nack"},{"parameter":"pli","type":"nack"}]},
+{"clockRate":90000,"kind":"video","name":"video/H264",
+"parameters":{"levelAsymmetryAllowed":1,"packetizationMode":1,"profileLevelId":"42001f"},
+"payloadType":106,"rtcpFeedback":[{"parameter":null,"type":"goog-remb"},{"parameter":"fir","type":"ccm"},
+{"parameter":null,"type":"nack"},{"parameter":"pli","type":"nack"}]},
+{"clockRate":90000,"kind":"video","name":"video/H264",
+"parameters":{"levelAsymmetryAllowed":1,"packetizationMode":1,"profileLevelId":"42e01f"},"payloadType":106,
+"rtcpFeedback":[{"parameter":null,"type":"goog-remb"},{"parameter":"fir","type":"ccm"},{"parameter":null,"type":"nack"},
+{"parameter":"pli","type":"nack"}]},{"clockRate":90000,"kind":"video","name":"video/rtx","parameters":{"apt":102},
+"payloadType":103,"rtcpFeedback":[]},{"clockRate":90000,"kind":"video","name":"video/rtx","parameters":{"apt":106},
+"payloadType":107,"rtcpFeedback":[]},{"clockRate":90000,"kind":"video","name":"video/rtx","parameters":{"apt":106},
+"payloadType":107,"rtcpFeedback":[]}],"fecMechanisms":[],"headerExtensions":[
+{"kind":"audio","preferredEncrypt":false,
+"preferredId":1,"uri":"urn:ietf:params:rtp-hdrext:ssrc-audio-level"},
+{"kind":"video","preferredEncrypt":false,"preferredId":2,"uri":"urn:ietf:params:rtp-hdrext:toffset"},
+{"kind":"video","preferredEncrypt":false,"preferredId":3,"uri":"http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time"},
+{"kind":"video","preferredEncrypt":false,"preferredId":4,"uri":"urn:3gpp:video-orientation"}]},"id":63530845}
+***************************************************
+****************************************************
+***************************************************
+****************************************************
+TO CPP_ :
+{"id":38717377,"method":"peer.createTransport","internal":{"roomId":15244254,"peerId":60866009,"transportId":57866334}}
+***************************************************
+****************************************************
+***************************************************
+****************************************************
+from cpp_ [IN]:
+{"accepted":true,"data":
+{"dtlsLocalParameters":
+{"fingerprints":{
+"sha-1":"200d20041624164159141eea3660789cc4bd2fe4",
+"sha-224":"972c4fa4a2938a682e9f0465a12ada3ffd727551c4b72b20ad16c945",
+"sha-256":"dbeed5ddfa79c68468a64e3775036f453cd29c264f670d0a32f6891e48ac1ee1",
+"sha-384":"0b945c220e7c8077e264daf2e40d2802cc119117197fbfb59340cd83262e05e83161e7c4b541da4a43af4ad31f9af282",
+"sha-512":"1e17bfb2c7b51c2df3eaaee906152b1d736aad340ddc10d29af6eac0f400721900dadfc8d7f8b3eac4c7ff9f5bb2d6275b14f2cec222bc8c83fa8be935f031ca"},
+"role":"auto"},
+"dtlsState":"new","effectiveMaxBitrate":0,
+"iceLocalCandidates":[
+{"family":"ipv4","foundation":"udpcandidate","ip":"10.34.25.176","port":42896,"priority":1078862079,"protocol":"udp","type":"host"},
+{"family":"ipv4","foundation":"tcpcandidate","ip":"10.34.25.176",
+"port":42739,"priority":1078862079,"protocol":"tcp","tcpType":"passive","type":"host"}],
+"iceLocalParameters":{"password":"by03i4lf9fmrgxkswbdovx60uwnwt6xx","usernameFragment":"u57a5f8u4exe34bb"},
+"iceRole":"controlled","iceState":"new","maxBitrate":0,"rtpListener":{"muxIdTable":{},"ptTable":{},"ssrcTable":{}},
+"transportId":57866334,"useRemb":false},"id":38717377}
+***************************************************
+****************************************************
+***************************************************
+****************************************************
+from cpp_ [IN]:
+{"data":
+{"class":"Transport",
+"iceSelectedTuple":{"localIP":"10.34.25.176","localPort":42896,"protocol":"udp","remoteIP":"10.34.25.176","remotePort":48610}},
+"event":"iceselectedtuplechange","targetId":57866334}
+***************************************************
+****************************************************
+***************************************************
+****************************************************
+from cpp_ [IN]:
+{"data":{"class":"Transport","iceState":"connected"},"event":"icestatechange","targetId":57866334}
+***************************************************
+****************************************************
+***************************************************
+****************************************************
+from cpp_ [IN]:
+{"data":{"class":"Transport","dtlsState":"connecting"},"event":"dtlsstatechange","targetId":57866334}
+***************************************************
+****************************************************
+***************************************************
+****************************************************
+TO CPP_ :
+{"id":37832248,"method":"transport.setRemoteDtlsParameters",
+"internal":{"roomId":15244254,"peerId":60866009,"transportId":57866334},
+"data":{"role":"client","fingerprint":{"algorithm":"sha-256","value":"1a604aa26d069d6136a3ffc16f576782db11beafbc8236f4ae294b9be025bc45"}}}
+***************************************************
+****************************************************
+***************************************************
+****************************************************
+from cpp_ [IN]:
+{"data":{"class":"Transport","iceState":"completed"},"event":"icestatechange","targetId":57866334}
+***************************************************
+****************************************************
+***************************************************
+****************************************************
+from cpp_ [IN]:
+{"accepted":true,"data":{"role":"server"},"id":37832248}
+***************************************************
+****************************************************
+***************************************************
+****************************************************
+TO CPP_ :
+{"id":81339614,
+"method":"peer.createRtpReceiver",
+"internal":{"roomId":15244254,"peerId":60866009,"rtpReceiverId":88577653,"transportId":57866334},"data":{"kind":"audio"}}
+***************************************************
+****************************************************
+***************************************************
+****************************************************
+TO CPP_ :
+{"id":71619553,"method":"rtpReceiver.receive",
+"internal":{"roomId":15244254,"peerId":60866009,"rtpReceiverId":88577653,"transportId":57866334},
+"data":{"codecs":[{"name":"audio/opus","payloadType":100,"clockRate":48000,"rtcpFeedback":[],
+"parameters":{"minptime":10,"useInbandFec":1},"numChannels":2}],"encodings":[{"ssrc":1787740816,"codecPayloadType":100}],
+"headerExtensions":[{"uri":"urn:ietf:params:rtp-hdrext:ssrc-audio-level","id":1}],"rtcp":{"cname":"1RlnR0EMsFuNjm+v"},
+"userParameters":{"msid":"hpwmhqjIdSVVH6qDb6siNs7HXitFaA4zZYpB e2cf47a1-a806-49e6-af84-9eb72bf7a44b"}}}
+***************************************************
+****************************************************
+***************************************************
+****************************************************
+TO CPP_ :
+{"id":56494866,"method":"peer.createRtpReceiver",
+"internal":{"roomId":15244254,"peerId":60866009,
+"rtpReceiverId":38750462,"transportId":57866334},
+"data":{"kind":"video"}}
+***************************************************
+****************************************************
+***************************************************
+****************************************************
+TO CPP_ :
+{"id":26626981,"method":"rtpReceiver.receive",
+"internal":{"roomId":15244254,"peerId":60866009,"rtpReceiverId":38750462,"transportId":57866334},
+"data":{"codecs":[{"name":"video/VP8","payloadType":102,"clockRate":90000,
+"rtcpFeedback":[{"type":"goog-remb"},{"type":"ccm","parameter":"fir"},{"type":"nack"},{"type":"nack","parameter":"pli"}],
+"parameters":{}},{"name":"video/H264","payloadType":106,"clockRate":90000,"rtcpFeedback":[{"type":"goog-remb"},
+{"type":"ccm","parameter":"fir"},{"type":"nack"},{"type":"nack","parameter":"pli"}],
+"parameters":{"levelAsymmetryAllowed":1,"packetizationMode":1,"profileLevelId":"42e01f"}},
+{"name":"video/rtx","payloadType":103,"clockRate":90000,"rtcpFeedback":[],"parameters":{"apt":102}},
+{"name":"video/rtx","payloadType":107,"clockRate":90000,"rtcpFeedback":[],"parameters":{"apt":106}}],
+"encodings":[{"ssrc":615420371,"codecPayloadType":102,"rtx":{"ssrc":3262658951}}],
+"headerExtensions":[{"uri":"urn:ietf:params:rtp-hdrext:toffset","id":2},
+{"uri":"http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time","id":3},{"uri":"urn:3gpp:video-orientation","id":4}],
+"rtcp":{"cname":"1RlnR0EMsFuNjm+v"},"userParameters":{"msid":"hpwmhqjIdSVVH6qDb6siNs7HXitFaA4zZYpB 468d0a7c-b29b-4efc-8ead-c5224b1ea39e"}}}
+***************************************************
+****************************************************
+***************************************************
+****************************************************
+from cpp_ [IN]:
+{"accepted":true,"data":{},"id":81339614}
+***************************************************
+****************************************************
+***************************************************
+****************************************************
+from cpp_ [IN]:
+{"accepted":true,
+"data":{"codecs":
+[{"clockRate":48000,"name":"audio/opus","numChannels":2,"parameters":{"minptime":10,"useInbandFec":1},
+"payloadType":100,"rtcpFeedback":[]}],"encodings":[{"active":true,"codecPayloadType":100,"ssrc":1787740816}],
+"headerExtensions":[{"encrypt":false,"id":1,"parameters":{},"uri":"urn:ietf:params:rtp-hdrext:ssrc-audio-level"}],
+"rtcp":{"cname":"1RlnR0EMsFuNjm+v","reducedSize":true},
+"userParameters":{"msid":"hpwmhqjIdSVVH6qDb6siNs7HXitFaA4zZYpB e2cf47a1-a806-49e6-af84-9eb72bf7a44b"}},
+"id":71619553}
+***************************************************
+****************************************************
+***************************************************
+****************************************************
+from cpp_ [IN]:
+{"accepted":true,"data":{},"id":56494866}
+***************************************************
+****************************************************
+***************************************************
+****************************************************
+from cpp_ [IN]:
+{"accepted":true,
+"data":
+{"codecs":[{"clockRate":90000,"name":"video/VP8","parameters":{},"payloadType":102,
+"rtcpFeedback":[{"parameter":null,"type":"goog-remb"},{"parameter":"fir","type":"ccm"},
+{"parameter":null,"type":"nack"},{"parameter":"pli","type":"nack"}]},{"clockRate":90000,"name":"video/H264",
+"parameters":{"levelAsymmetryAllowed":1,"packetizationMode":1,"profileLevelId":"42e01f"},
+"payloadType":106,
+"rtcpFeedback":[{"parameter":null,"type":"goog-remb"},
+{"parameter":"fir","type":"ccm"},{"parameter":null,"type":"nack"},{"parameter":"pli","type":"nack"}]},
+{"clockRate":90000,"name":"video/rtx","parameters":{"apt":102},"payloadType":103,"rtcpFeedback":[]},
+{"clockRate":90000,"name":"video/rtx","parameters":{"apt":106},"payloadType":107,"rtcpFeedback":[]}],
+"encodings":[{"active":true,"codecPayloadType":102,"rtx":{"ssrc":3262658951},"ssrc":615420371}],
+"headerExtensions":[{"encrypt":false,"id":2,"parameters":{},"uri":"urn:ietf:params:rtp-hdrext:toffset"},
+{"encrypt":false,"id":3,"parameters":{},"uri":"http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time"},
+{"encrypt":false,"id":4,"parameters":{},"uri":"urn:3gpp:video-orientation"}],
+"rtcp":{"cname":"1RlnR0EMsFuNjm+v","reducedSize":true},
+"userParameters":{"msid":"hpwmhqjIdSVVH6qDb6siNs7HXitFaA4zZYpB 468d0a7c-b29b-4efc-8ead-c5224b1ea39e"}},
+"id":26626981
+}
+***************************************************
+****************************************************
+state  stable
+after SET remoteDescription()
+-- PEERS in the room FROM handleAnswer =  1
+pool connected
+pool acquired 
+ok update rooms view handleanswer
+url:  /globik
+el.url:  /globik
+***************************************************
+****************************************************
+from cpp_ [IN]:
+{"data":
+{"class":"Transport",
+"dtlsRemoteCert":"-----BEGIN CERTIFICATE-----\n
+MIIBFTCBvaADAgECAgkAoEyEh6rGELkwCgYIKoZIzj0EAwIwETEPMA0GA1UEAwwG\nV2ViUlRDMB4XDTE4MDUwMzEzNDgyOVoXDTE4MDYwMzEzNDgyOVowETEPMA0GA1UE
+\nAwwGV2ViUlRDMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEvWaZ3aIC8XBfcKCL\nzYhnb3DjotS8bpa6hAC9qRQTmrPYQ1X03fnwQBIK740syiJvJKA5RmRw1N8wHl1k
+\nCTPjgjAKBggqhkjOPQQDAgNHADBEAiBi/Cal2VekP1I+3BfNFHSg03FciW0JcpZk\nR7c7rh0+lQIgBQfYQyIrHS222JFo+++9pPjtoP/pAXl7JvujSh/tidg=
+\n-----END CERTIFICATE-----\n",
+"dtlsState":"connected"},
+"event":"dtlsstatechange",
+"targetId":57866334}
+***************************************************
+****************************************************
+MESSAGE: 
+ONLINE:  5aec64aecf066e550bab7e46
+
+
+## DISCONNECT END BROADCAST!!!
+
+PeerConnection close. id=rJjqEkcaG
+***************************************************
+****************************************************
+TO CPP_ :
+{"id":42097232,"method":"peer.close","internal":{"roomId":15244254,"peerId":60866009,"peerName":"rJjqEkcaG"}}
+***************************************************
+****************************************************
+peerconnection closed 
+NAME in Clean UP Peer:  globik
+***************************************************
+****************************************************
+from cpp_ [IN]:
+{"data":{"class":"RtpReceiver"},"event":"close","targetId":38750462}
+***************************************************
+****************************************************
+***************************************************
+****************************************************
+from cpp_ [IN]:
+{"data":{"class":"RtpReceiver"},"event":"close","targetId":88577653}
+***************************************************
+****************************************************
+***************************************************
+****************************************************
+from cpp_ [IN]:
+{"data":{"class":"Transport"},"event":"close","targetId":57866334}
+***************************************************
+****************************************************
+***************************************************
+****************************************************
+from cpp_ [IN]:
+{"data":{"class":"Peer"},"event":"close","targetId":60866009}
+***************************************************
+****************************************************
+***************************************************
+****************************************************
+from cpp_ [IN]:
+{"accepted":true,"data":{},"id":42097232}
+***************************************************
+****************************************************
+
+
+
+

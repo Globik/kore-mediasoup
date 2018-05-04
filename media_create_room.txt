@@ -1,0 +1,89 @@
+# CREATE ROOM
+
+is mediaserver closed?:  false
+trying create a room:  globik
+***************************************************
+****************************************************
+TO CPP_ :
+{
+"id":91805718,"method":"worker.createRoom",
+"internal":{"roomId":40197850},
+"data":{"mediaCodecs":[
+{"kind":"audio","name":"audio/opus","clockRate":48000,"numChannels":2},
+{"kind":"audio","name":"audio/PCMU","clockRate":8000},
+{"kind":"video","name":"video/vp8","clockRate":90000},
+{"kind":"video","name":"video/h264","clockRate":90000,"parameters":{"packetizationMode":0}},
+{"kind":"video","name":"video/h264","clockRate":90000,"parameters":{"packetizationMode":1}},
+{"kind":"depth","name":"video/vp8","clockRate":90000}
+]}
+}
+***************************************************
+****************************************************
+
+***************************************************
+****************************************************
+from cpp_ [IN]:
+{
+"accepted":true,
+"data":{"capabilities":
+{"codecs":[
+{"clockRate":48000,"kind":"audio","name":"audio/opus","numChannels":2,"parameters":{},"payloadType":100,"rtcpFeedback":[]},
+{"clockRate":8000,"kind":"audio","name":"audio/PCMU","parameters":{},"payloadType":101,"rtcpFeedback":[]},
+{"clockRate":90000,"kind":"video","name":"video/VP8","parameters":{},"payloadType":102,
+"rtcpFeedback":[{"parameter":null,"type":"nack"},{"parameter":"pli","type":"nack"},
+{"parameter":"sli","type":"nack"},
+{"parameter":"rpsi","type":"nack"},
+{"parameter":"app","type":"nack"},{"parameter":"fir","type":"ccm"},
+{"parameter":"rpsi","type":"ack"},{"parameter":"app","type":"ack"},
+{"parameter":null,"type":"goog-remb"}]},
+{"clockRate":90000,"kind":"video","name":"video/H264","parameters":{"packetizationMode":0},"payloadType":104,
+"rtcpFeedback":[{"parameter":null,"type":"nack"},{"parameter":"pli","type":"nack"},
+{"parameter":"sli","type":"nack"},{"parameter":"rpsi","type":"nack"},{"parameter":"app","type":"nack"},
+{"parameter":"fir","type":"ccm"},{"parameter":"rpsi","type":"ack"},{"parameter":"app","type":"ack"},
+{"parameter":null,"type":"goog-remb"}]},{"clockRate":90000,"kind":"video","name":"video/H264",
+"parameters":{"packetizationMode":1},"payloadType":106,"rtcpFeedback":[{"parameter":null,"type":"nack"},
+{"parameter":"pli","type":"nack"},{"parameter":"sli","type":"nack"},{"parameter":"rpsi","type":"nack"},
+{"parameter":"app","type":"nack"},{"parameter":"fir","type":"ccm"},{"parameter":"rpsi","type":"ack"},
+{"parameter":"app","type":"ack"},{"parameter":null,"type":"goog-remb"}]},
+{"clockRate":90000,"kind":"depth","name":"video/VP8","parameters":{},"payloadType":108,
+"rtcpFeedback":[{"parameter":null,"type":"nack"},{"parameter":"pli","type":"nack"},
+{"parameter":"sli","type":"nack"},{"parameter":"rpsi","type":"nack"},{"parameter":"app","type":"nack"},
+{"parameter":"fir","type":"ccm"},{"parameter":"rpsi","type":"ack"},{"parameter":"app","type":"ack"},
+{"parameter":null,"type":"goog-remb"}]}],"fecMechanisms":[],
+"headerExtensions":[
+{"kind":"audio","preferredEncrypt":false,"preferredId":1,"uri":"urn:ietf:params:rtp-hdrext:ssrc-audio-level"},
+{"kind":"video","preferredEncrypt":false,"preferredId":2,"uri":"urn:ietf:params:rtp-hdrext:toffset"},
+{"kind":"","preferredEncrypt":false,"preferredId":3,"uri":"http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time"},
+{"kind":"video","preferredEncrypt":false,"preferredId":4,"uri":"urn:3gpp:video-orientation"},
+{"kind":"","preferredEncrypt":false,"preferredId":5,"uri":"urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id"}]}},
+"id":91805718
+}
+***************************************************
+****************************************************
+ROOM.ID:  40197850
+
+# DELETE ROOM
+
+MESSAGE: 
+CLOSING THE ROOM!!!:  globik
+***************************************************
+****************************************************
+TO CPP_ :
+{"id":58776925,"method":"room.close","internal":{"roomId":40197850}}
+***************************************************
+****************************************************
+on_close_room(err)
+closing a room droom.size:  0
+***************************************************
+****************************************************
+from cpp_ [IN]:
+{"data":{"class":"Room"},"event":"close","targetId":40197850}
+***************************************************
+****************************************************
+***************************************************
+****************************************************
+from cpp_ [IN]:
+{"accepted":true,"data":{},"id":58776925}
+***************************************************
+****************************************************
+
