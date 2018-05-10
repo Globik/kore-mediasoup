@@ -2,7 +2,11 @@
 #include "libuv.hpp"
 #include "uv_callback.h"
 #include "signal.h"
-
+struct fi;
+typedef void(*on_mu)(void*);
+struct fi{
+	on_mu mu;
+};
 uv_callback_t bus, stop_worker,to_cpp;
 
 void * on_bus(uv_callback_t*, void*);
@@ -13,16 +17,21 @@ printf("\n ON_SIG occured.\n");
 uv_callback_fire(&stop_worker,NULL,NULL);
 }
 void*on_from_cpp(uv_callback_t*handle,void*data){
-printf("ON_FROM_CPP occured. %s\n",(char*)data);
+printf("ON_FROM_CPP occured. %s\n", (char*)data);
 return NULL;
 }
-
+void brother(void*d){
+printf("DD: %s\n",(char*)d);
+}
 int main(){
+	struct fi lu;
+	lu.mu=brother;
+	lu.mu("brother");
 signal(SIGINT,j_han_sig);
 signal(SIGTERM,j_han_sig);
 ini();
 printi();
-int rc=uv_callback_init(get_loopi(), &bus,on_bus, UV_DEFAULT);
+int rc=uv_callback_init(get_loopi(), &bus, on_bus, UV_DEFAULT);
 printf("rc init: %d\n",rc);
 rc=uv_callback_fire(&bus,(void*)"MAMA", NULL);
 printf("rc fire: %d\n",rc);
@@ -45,6 +54,7 @@ void * on_bus(uv_callback_t*cb, void*data){
 printf("ON_BUS occured. %s\n", (char*)data);
 return NULL;
 }
+
 void * stop_worker_cb(uv_callback_t*handle,void*arg){
 printf("ON_STOP worker cb\n");
 uv_stop(((uv_handle_t*)handle)->loop);
