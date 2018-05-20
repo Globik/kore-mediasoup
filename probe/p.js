@@ -1,3 +1,4 @@
+// see excelent article on https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function
 /*function makefunction(code){
 return new Function('"use strict";return '+code)();
 }
