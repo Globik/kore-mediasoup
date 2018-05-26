@@ -38,7 +38,8 @@ INCS_Debug := \
 	-I/home/globik/.node-gyp/9.3.0/src \
 	-I/home/globik/.node-gyp/9.3.0/deps/uv/include \
 	-I/home/globik/.node-gyp/9.3.0/deps/v8/include \
-	-I/home/globik/kore.io_websocket/uv3
+	-I/home/globik/kore.io_websocket/uv3 \
+	-I/home/globik/ee.c/deps/list
 
 DEFS_Release := \
 	'-DNODE_GYP_MODULE_NAME=binding' \
@@ -73,7 +74,8 @@ INCS_Release := \
 	-I/home/globik/.node-gyp/9.3.0/src \
 	-I/home/globik/.node-gyp/9.3.0/deps/uv/include \
 	-I/home/globik/.node-gyp/9.3.0/deps/v8/include \
-	-I/home/globik/kore.io_websocket/uv3
+	-I/home/globik/kore.io_websocket/uv3 \
+	-I/home/globik/ee.c/deps/list
 
 OBJS := \
 	$(obj).target/$(TARGET)/e.o
@@ -113,7 +115,8 @@ LDFLAGS_Release := \
 	-m32
 
 LIBS := \
-	-Wl,-rpath /home/globik/kore.io_websocket/uv3 -L /home/globik/kore.io_websocket/uv3 -luv_callback
+	-Wl,-rpath /home/globik/kore.io_websocket/uv3 -L /home/globik/kore.io_websocket/uv3 -luv_callback \
+	-lee
 
 $(obj).target/binding.node: GYP_LDFLAGS := $(LDFLAGS_$(BUILDTYPE))
 $(obj).target/binding.node: LIBS := $(LIBS)

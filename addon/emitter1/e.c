@@ -3,12 +3,13 @@
 #include <string.h>
 #include <stdio.h>//printf
 #include <stdlib.h>
+#include <unistd.h> // sleep
+#include <ee.h> // event emitter in C https://github.com/thlorenz/ee.c
 
 #include <uv.h>
 
-#include "uv_callback.h"
 int a=0;
-uv_callback_t cb_sum;
+const char*event_hello="hello";
 
 typedef struct{
 napi_ref _callback;
@@ -16,62 +17,50 @@ napi_async_work _request;
 }carrier;
 
 napi_env shenv=NULL;
-napi_value cb_id=NULL;
+ee_t*ee=NULL;
+napi_ref dcb;
 
 uv_async_t async;
 
-void*on_sum(uv_callback_t*cb,void*data){
-printf("on_sum occured: %s\n",(char*)data);
-//try here emit ev to nodejs
-return NULL;
+void on_hello(void*arg){
+char*s=(char*)arg;
+printf("invoked `on_hello` event with: %s\n",s);
 }
-
-
 napi_value fucker(){
 	a++;
+	napi_status k;
 	printf("fucker\n");
-if(shenv == NULL) return NULL;
-	napi_env env=shenv;
-	napi_value argv[1];
-   napi_value data;
+if(shenv == NULL){printf("NULLLLLL\n"); return NULL;}
+	napi_value cbu;
+	
 	napi_handle_scope scope;
-	napi_open_handle_scope(env,&scope);
-	const char * str = "start";
+	napi_open_handle_scope(shenv,&scope);
+	napi_value argv[1];
+	const char * str = "start*****************************************";
 	size_t str_len = strlen(str);
 	printf("suka\n");
-	napi_status k=napi_create_string_utf8(env, str, str_len, argv);
+		k=napi_create_string_utf8(shenv, str, str_len, argv);
 	if(k==napi_ok){printf("cr_str1 is ok\n");}else{printf("cr_str1 is not ok\n");}
-	
-	const char * str2 = "'Some data string came from a n-api addon in plain C, ***!'";
-	size_t str_len2 = strlen(str2);
-	
-	k=napi_create_string_utf8(env, str2, str_len2, &data);
-	if(k==napi_ok){printf("cr_str2 is ok\n");}else{printf("cr_str2 is not ok\n");}
-	
-//napi_value argv[1];
-	//napi_create_string_utf8(env,str,str_len,argv);
+ 
+	k=napi_get_reference_value(shenv, dcb, &cbu);
+	if(k==napi_ok)printf("get_ref is ok\n");
 	napi_value global;
-	k=napi_get_global(env,&global);
+	k=napi_get_global(shenv,&global);
 	if(k==napi_ok){printf("get_glob is ok\n");}else{printf("get_glob is not ok\n");}
 	
-	napi_value cbu=cb_id;
-    k=napi_call_function(env, global, cbu, 2, argv,NULL);
-	if(k==napi_ok){printf("call_func is ok\n");}else{printf("call_func is not ok\n");}
+    k=napi_call_function(shenv, global, cbu, 2, argv,NULL);
+	if(k==napi_ok){printf("call_func is ok\n");}else{printf("call_func is not ok\n");return NULL;}
 	
-	k=napi_close_handle_scope(env,scope);
+	k=napi_close_handle_scope(shenv,scope);
 	if(k==napi_ok){printf("close_scope is ok\n");}else{printf("close_scope is not ok\n");}
-	
-	return data;
+	return NULL;
 	
 }
 
 
 napi_value callEmit(napi_env env, napi_callback_info info){
 	
-	//int rc=uv_callback_fire(&cb_sum,(void*)"string",NULL);
-	//printf("&cb_sum fire: %d\n",rc);
-	
-	
+	napi_status k;
 	size_t argc = 2;
 	napi_value args[2];
 	napi_get_cb_info(env, info, &argc, args, NULL, NULL);
@@ -94,19 +83,19 @@ napi_value callEmit(napi_env env, napi_callback_info info){
 	}else{
 	printf("Additional args[1] should be undefined.\n");
 	}
-	if(shenv==NULL)shenv=env;
-	cb_id=args[0];
+	if(shenv==NULL){
+	printf("SHENV is NULL\n");
+	shenv=env;
+	}
+	napi_value argv[1];
+	k=napi_create_reference(env, args[0], 10, &dcb);
+	if(k==napi_ok){printf("create reference is ok\n");}else{printf("create reference is not ok\n");}
 	
-	/*
-   napi_value argv[1];
-   napi_value data;
 	const char * str = "start";
 	size_t str_len = strlen(str);
 	napi_create_string_utf8(env, str, str_len, argv);
 	
-	const char * str2 = "'Some data string came from a n-api addon in plain C, ***!'";
-	size_t str_len2 = strlen(str2);
-	napi_create_string_utf8(env, str2, str_len2, &data);
+
 	
 	napi_value global;
 	napi_get_global(env, &global);
@@ -120,74 +109,53 @@ napi_value callEmit(napi_env env, napi_callback_info info){
 	printf("napi_status is NOT OK!\n");
 	return NULL;
 	}
-	return data;
-	*/
-	//fucker();
-	//fucker();
-	//fucker();
-	
 	return NULL;
 }
 
 void Execute(napi_env env, void*data){
 	printf("Entering Execute()\n");
-	//uv_loop_t *loop;
 if(data==NULL){printf("data is null\n");return;}
 	carrier*c=(carrier*)data;
 	if(!c){printf("!c\n");return;}
-	/*
-	napi_status status=napi_get_uv_event_loop(env,&loop);
-	if(status==napi_ok){
-		printf("loop is ok\n");
-	}else{
-		printf("loop is NOT ok\n");
-		return;
-	}
 	
-	uv_loop_init(loop);
-	*/
-//	int r=uv_callback_fire(&cb_sum,(void*)"string",NULL);
-//	printf("&cb_sum fire: %d\n",r);
-	/*
-	int rc=uv_callback_init(loop, &cb_sum,on_sum,UV_DEFAULT);
-	printf("rc init: %d\n",rc);
-	if(rc !=0)return;
-	printf("Blah.\n");
-	int r=uv_callback_fire(&cb_sum, NULL, NULL);
-	printf("&cb_sum fire: %d\n",r);
-	uv_run(loop,UV_RUN_DEFAULT);
-	r=uv_callback_fire(&cb_sum, NULL, NULL);
-	printf("&cb_sum fire: %d\n",r);
-	//if(rc !=0)return;
-	*/
+	if(ee !=NULL)ee_on(ee,event_hello,on_hello);
+	
 	async.data=(void*)"L";
-	uv_async_send(&async);
-	
+	int ab=uv_async_send(&async);
+	printf("status of uv_async_send: %d\n",ab);
 	
 }
 void print(uv_async_t*handle){
 	printf("print***print: %s\n",(char*)handle->data);
+	if(ee !=NULL){printf("ee is NOT NULL!!!\n"); ee_emit(ee,event_hello,"room create!\n");}
+	napi_status k;
 	fucker();
 	fucker();
 	fucker();
 	printf("AAAAAAAAAAAAAAAAAAA: %d\n",a);
-	//uv_close((uv_handle_t*)&async,NULL);
-	
-}
+	}
+void print_to(uv_async_t*handle){printf("print_to() occured. : %s\n",(char*)handle->data);}
+
+
 void Complete(napi_env env,napi_status status,void*data){
 	printf("Entering Complete()\n");
     carrier*c=(carrier*)data;
 	if(status !=napi_ok){printf("status is NOT OK.\n");return;}else{printf("status is ok\n");}
 	napi_value argv[2];
+	napi_get_null(env,&argv[0]);
 	napi_value callbac;
 	napi_status k=napi_get_reference_value(env,c->_callback, &callbac);
 	if(k==napi_ok)printf("get_ref is ok\n");
 	napi_value globali;
 	k=napi_get_global(env,&globali);
 	if(k==napi_ok)printf("get_glob is ok\n");
-	napi_value result;
+	
 	if(status==napi_ok)printf("status is ok\n");
-	k=napi_call_function(env, globali, callbac, 2, argv,&result);
+	const char * str = "start_up";
+	size_t str_len = strlen(str);
+	napi_create_string_utf8(env, str, str_len, &argv[1]);
+	
+	k=napi_call_function(env, globali, callbac, 2, argv, NULL);
 	if(k==napi_ok){printf("call_func is ok\n");}else{printf("call_func is not ok\n");}
 	
 	
@@ -196,10 +164,7 @@ void Complete(napi_env env,napi_status status,void*data){
 	if(k==napi_ok){printf("del_ref is ok\n");}else{printf("del_ref is not ok\n");}
 	k=napi_delete_async_work(env,c->_request);
 	if(k==napi_ok){printf("del_work is ok\n");}else{printf("del_work is not ok\n");}
-	//free(c);
-	// m
-	//uv_close((uv_handle_t*)&async,NULL);
-	//return;
+	free(c);
 }
 
 napi_value create_async(napi_env env, napi_callback_info info){
@@ -209,7 +174,7 @@ size_t argc=3;
 	carrier*c=malloc(sizeof(carrier));
 	if(c==NULL)return NULL;
 	
-		uv_loop_t *loop=NULL;
+	uv_loop_t *loop=NULL;
 	napi_status status=napi_get_uv_event_loop(env,&loop);
 	if(status==napi_ok){
 		printf("loop is ok\n");
@@ -218,24 +183,40 @@ size_t argc=3;
 		return NULL;
 	}
 	
-	//int rc=uv_callback_init(loop, &cb_sum,on_sum,UV_DEFAULT);
-	//printf("rc init: %d\n",rc);
-	napi_get_cb_info(env,info,&argc,argv, &_this, &data);
+
+	napi_get_cb_info(env,info, &argc,argv, &_this, &data);
 	napi_create_reference(env, argv[2], 1, &c->_callback);
 	napi_create_string_utf8(env,"testi",NAPI_AUTO_LENGTH,&resource_name);
 	
-uv_async_init(loop,&async,print);
-	
+    int ab=uv_async_init(loop, &async, print);
+	printf("uv_async_init: %d\n", ab);
 	napi_create_async_work(env, argv[1], resource_name, Execute, Complete, c, &c->_request);
 	napi_queue_async_work(env, c->_request);
-	
-	//int rc=uv_callback_fire(&cb_sum,(void*)"string",NULL);
-	//printf("&cb_sum fire: %d\n",rc);
-	//if(rc !=0)return NULL;
 	return NULL;
 }
+void han(void){
+	// don't forget into the node.js script to add the process.on('SIGINT',()=>process.exit(0))
+printf("ON_EXIT occured!!!\n");
+if(ee !=NULL){
+ee_remove_listener(ee,event_hello,on_hello);
+ee_destroy(ee);
+ee=NULL;
+printf("ee must be null.\n");
+}
+napi_status k=napi_delete_reference(shenv, dcb);
+if(k==napi_ok){printf("del_ref is ok\n");}else{printf("del_ref is not ok\n");}
+uv_close((uv_handle_t*)&async,NULL);
+}
+void cleanup(void*arg){}
+int secret=7;
+
 napi_value Init(napi_env env, napi_value exports)
 {
+// not available yet in node.js v 9.0
+	//napi_add_env_cleanup_hook(env,cleanup,&secret,8);
+	ee=ee_new();
+	if(ee==NULL){printf("ee is NULL\n");}else{printf("ee is NOT NULL\n");}
+	atexit(han);
 napi_property_descriptor desc[2] = {
 	{"callEmit",0, callEmit, 0, 0, 0, napi_default, 0},
 	{"create_async",0,create_async, 0, 0, 0, napi_default, 0}
