@@ -6,10 +6,40 @@
 #include <unistd.h> // sleep
 #include <ee.h> // event emitter in C https://github.com/thlorenz/ee.c
 
+#include <sys/socket.h>
+#include <sys/un.h>
+
+#include <signal.h>
+
+#include <sys/select.h>
+#include <errno.h>
+
+#include <fcntl.h>
+#define socket_name "/home/globik/fuck"
+#define buffer_size 512
+
+
 #include <uv.h>
+sigset_t mask;
+sigset_t orig_mask;
+struct sigaction act;
+typedef  void(*on_suka)(int d);
+static volatile int exit_req=0;
+static void hdl(int sig){
+exit_req=1;
+}
+void suka(int bc){
+printf("SUKA!\n");
+//sleep(10);
+printf("AFTER SUKA\n");
+}
+fd_set write_fds;
+int data_socket=0;
 
 int a=0;
+int can_write=0;
 const char*event_hello="hello";
+const char*event_down="down";
 
 typedef struct{
 napi_ref _callback;
@@ -22,117 +52,226 @@ napi_ref dcb;
 
 uv_async_t async;
 
+void dow(int s, on_suka suk){
+char buf[512];int ret;int moo=0;
+printf("before moo\n");
+if(moo==0){
+strcpy(buf,"Hallo world!");
+int leni=strlen(buf)+1;
+ret=send(s,buf, leni,  MSG_DONTWAIT | MSG_EOR);
+if(ret==-1){
+perror("write2");
+	close(s);
+	return;
+exit(EXIT_FAILURE);
+}
+printf("leni: %d, ret: %d\n",leni,ret);
+can_write=1;
+}
+}
+// cd kore-mediasoup/addon/emitter1
 void on_hello(void*arg){
 char*s=(char*)arg;
 printf("invoked `on_hello` event with: %s\n",s);
 }
-napi_value fucker(){
-	a++;
-	napi_status k;
-	printf("fucker\n");
-if(shenv == NULL){printf("NULLLLLL\n"); return NULL;}
-	napi_value cbu;
-	
-	napi_handle_scope scope;
-	napi_open_handle_scope(shenv,&scope);
-	napi_value argv[1];
-	const char * str = "start*****************************************";
-	size_t str_len = strlen(str);
-	printf("suka\n");
-		k=napi_create_string_utf8(shenv, str, str_len, argv);
-	if(k==napi_ok){printf("cr_str1 is ok\n");}else{printf("cr_str1 is not ok\n");}
- 
-	k=napi_get_reference_value(shenv, dcb, &cbu);
-	if(k==napi_ok)printf("get_ref is ok\n");
-	napi_value global;
-	k=napi_get_global(shenv,&global);
-	if(k==napi_ok){printf("get_glob is ok\n");}else{printf("get_glob is not ok\n");}
-	
-    k=napi_call_function(shenv, global, cbu, 2, argv,NULL);
-	if(k==napi_ok){printf("call_func is ok\n");}else{printf("call_func is not ok\n");return NULL;}
-	
-	k=napi_close_handle_scope(shenv,scope);
-	if(k==napi_ok){printf("close_scope is ok\n");}else{printf("close_scope is not ok\n");}
-	return NULL;
-	
+void on_down(void*a){
+printf("ON DOWN OCCURED.\n");
+	exit_req=1;
 }
-
-
-napi_value callEmit(napi_env env, napi_callback_info info){
-	
-	napi_status k;
-	size_t argc = 2;
-	napi_value args[2];
-	napi_get_cb_info(env, info, &argc, args, NULL, NULL);
-	if(argc == 1){
-	printf("OK in a number of argc. A single argument as expected: %d\n", argc);
-			   }else{
-	printf("argc is %d\n", argc);
-	}
-	napi_valuetype val0;
-	napi_typeof(env, args[0], &val0);
-	if(val0 == napi_function){
-	printf("OK, args[0] is a function.\n");
-	}else{
-	printf("args[0] is not a function.\n");
-	}
-	napi_valuetype val1;
-	napi_typeof(env, args[1], &val1);
-	if(val1 == napi_undefined){
-	printf("args[1] is undefined.\n");
-	}else{
-	printf("Additional args[1] should be undefined.\n");
-	}
-	if(shenv==NULL){
-	printf("SHENV is NULL\n");
-	shenv=env;
-	}
-	napi_value argv[1];
-	k=napi_create_reference(env, args[0], 10, &dcb);
-	if(k==napi_ok){printf("create reference is ok\n");}else{printf("create reference is not ok\n");}
-	
-	const char * str = "start";
-	size_t str_len = strlen(str);
-	napi_create_string_utf8(env, str, str_len, argv);
-	
-
-	
-	napi_value global;
-	napi_get_global(env, &global);
-	napi_value cb = args[0];
-	
-	
-	napi_status status = napi_call_function(env, global, cb, 2, argv, NULL);
-	if(status == napi_ok){
-	printf("napi_status is OK! Event fired!\n");
-	}else{
-	printf("napi_status is NOT OK!\n");
-	return NULL;
-	}
-	return NULL;
+napi_value fucker(){
+a++;
+napi_status k;
+printf("fucker\n");
+if(shenv == NULL){printf("NULLLLLL\n"); return NULL;}
+napi_value cbu;
+napi_handle_scope scope;
+napi_open_handle_scope(shenv,&scope);
+napi_value argv[1];
+const char * str = "start*****************************************";
+size_t str_len = strlen(str);
+printf("suka\n");
+k=napi_create_string_utf8(shenv, str, str_len, argv);
+if(k==napi_ok){printf("cr_str1 is ok\n");}else{printf("cr_str1 is not ok\n");}
+k=napi_get_reference_value(shenv, dcb, &cbu);
+if(k==napi_ok)printf("get_ref is ok\n");
+napi_value global;
+k=napi_get_global(shenv,&global);
+if(k==napi_ok){printf("get_glob is ok\n");}else{printf("get_glob is not ok\n");}
+k=napi_call_function(shenv, global, cbu, 2, argv,NULL);
+if(k==napi_ok){printf("call_func is ok\n");}else{printf("call_func is not ok\n");return NULL;}
+k=napi_close_handle_scope(shenv,scope);
+if(k==napi_ok){printf("close_scope is ok\n");}else{printf("close_scope is not ok\n");}
+return NULL;
+}
+napi_value callEmit(napi_env env, napi_callback_info info)
+{
+napi_status k;
+size_t argc = 2;
+napi_value args[2];
+napi_get_cb_info(env, info, &argc, args, NULL, NULL);
+if(argc == 1){
+printf("OK in a number of argc. A single argument as expected: %d\n", argc);
+}else{
+printf("argc is %d\n", argc);
+}
+napi_valuetype val0;
+napi_typeof(env, args[0], &val0);
+if(val0 == napi_function){
+printf("OK, args[0] is a function.\n");
+}else{
+printf("args[0] is not a function.\n");
+}
+napi_valuetype val1;
+napi_typeof(env, args[1], &val1);
+if(val1 == napi_undefined){
+printf("args[1] is undefined.\n");
+}else{
+printf("Additional args[1] should be undefined.\n");
+}
+if(shenv==NULL){
+printf("SHENV is NULL\n");
+shenv=env;
+}
+napi_value argv[1];
+k=napi_create_reference(env, args[0], 10, &dcb);
+if(k==napi_ok){printf("create reference is ok\n");}else{printf("create reference is not ok\n");}
+const char * str = "start";
+size_t str_len = strlen(str);
+napi_create_string_utf8(env, str, str_len, argv);
+napi_value global;
+napi_get_global(env, &global);
+napi_value cb = args[0];
+napi_status status = napi_call_function(env, global, cb, 2, argv, NULL);
+if(status == napi_ok){
+printf("napi_status is OK! Event fired!\n");
+}else{
+printf("napi_status is NOT OK!\n");
+return NULL;
+}
+return NULL;
 }
 
 void Execute(napi_env env, void*data){
-	printf("Entering Execute()\n");
+fprintf(stderr,"Entering Execute()\n");
 if(data==NULL){printf("data is null\n");return;}
-	carrier*c=(carrier*)data;
-	if(!c){printf("!c\n");return;}
+carrier*c=(carrier*)data;
+if(!c){printf("!c\n");return;}
+//if(ee !=NULL)ee_on(ee,event_hello,on_hello);
+//async.data=(void*)"L";
+//int ab=uv_async_send(&async);
+//printf("status of uv_async_send: %d\n",ab);
 	
-	if(ee !=NULL)ee_on(ee,event_hello,on_hello);
 	
-	async.data=(void*)"L";
-	int ab=uv_async_send(&async);
-	printf("status of uv_async_send: %d\n",ab);
+struct sockaddr_un addr;
+int ret;
+int br=0;
+char buffer[buffer_size];
+data_socket=socket(AF_UNIX,SOCK_SEQPACKET | O_NONBLOCK,0);
+fprintf(stderr,"DATA_SOCKET: %d\n",data_socket);
+if(data_socket==-1){
+perror("socket");
+fprintf(stderr,"DATA SOCKET IS -1 !!\n");
+//exit(EXIT_FAILURE);
+
+return;
+//async.data=(void*)"SERVER IS DOWN!!!";
+	//ab=uv_async_send(&async);
+	//printf("status async: %d\n",ab);
+}
+printf("AFTER DATA SOCKET\n");
+	
+memset(&addr,0,sizeof(struct sockaddr_un));
+addr.sun_family=AF_UNIX;
+strncpy(addr.sun_path,socket_name,sizeof(addr.sun_path)-1);
+ret=connect(data_socket,(const struct sockaddr*)&addr,sizeof(struct sockaddr_un));
+if(ret==-1){
+fprintf(stderr,"the server is down\n");
+close(data_socket);
+//async.data=(void*)"SERVER IS DOWN!!!";
+//ab=uv_async_send(&async);
+//printf("status async: %d\n",ab);
+return;
+//exit(EXIT_FAILURE);
+}
+	/*
+	while(1){
+		br++;
+	printf("WHILEEEEEEEEEE\n");
+		if(br==100){printf("br is 100, break\n");break;}
+	}
+	*/
+	
+	
+fd_set read_fds;
+//fd_set except_fds;
+//signal(SIGUSR1,HANI);
+if(ee !=NULL)ee_on(ee,event_down,on_down);
+while(!exit_req){
+br++;
+fprintf(stderr, "BR_BR: %d\n",br);
+FD_ZERO(&read_fds);
+FD_SET(data_socket, &read_fds);
+FD_ZERO(&write_fds);
+if (can_write == 0){ 
+//printf("there is smth to send, set up write_fd for server socket!!!\n");
+FD_SET(data_socket, &write_fds);
+}
+fprintf(stderr, "BEFORE ACTIVITY\n");
+//raise(SIGUSR1);
+if(br==10){
+fprintf(stderr,"HAHA! br is 10\n");
+break;
+}
+int activity = pselect(data_socket + 1, &read_fds, &write_fds, NULL, NULL,&orig_mask);
+fprintf(stderr, "ACTIVITY: %d\n",activity);
+switch (activity) {
+case -1:
+perror("select()");
+printf("%d\n",errno);
+close(data_socket);
+	// cd kore-mediasoup/addon/emitter1	
+		return;
+//shutdown_properly(EXIT_FAILURE);
+case 0:
+printf("EXIT REQ??? select() returns 0.\n");
+close(data_socket);
+break;
+return;
+//shutdown_properly(EXIT_FAILURE);
+
+default:
+if (FD_ISSET(data_socket, &read_fds)) {
+fprintf(stderr,"SERVER READ_FDS!!!!!!!!!!!\n");
+ret=read(data_socket,buffer,buffer_size);
+if(ret==-1){
+perror("read");
+close(data_socket);
+break;
+//exit(EXIT_FAILURE);
+}
+buffer[ret-1]=0;
+fprintf(stderr,"result => %s\n",buffer);
+//abba=0;	
+}
+
+if (FD_ISSET(data_socket, &write_fds)) {
+fprintf(stderr,"SERVER WRITE_FDS!!!!!!!!!!!!!!!!\n");
+dow(data_socket,suka);
+}
+}
+fprintf(stderr,"end of while\n");
+}
+
 	
 }
 void print(uv_async_t*handle){
 	printf("print***print: %s\n",(char*)handle->data);
 	if(ee !=NULL){printf("ee is NOT NULL!!!\n"); ee_emit(ee,event_hello,"room create!\n");}
-	napi_status k;
-	fucker();
-	fucker();
-	fucker();
-	printf("AAAAAAAAAAAAAAAAAAA: %d\n",a);
+	//napi_status k;
+	//fucker();
+	//fucker();
+	//fucker();
+	//printf("AAAAAAAAAAAAAAAAAAA: %d\n",a);
 	}
 void print_to(uv_async_t*handle){printf("print_to() occured. : %s\n",(char*)handle->data);}
 
@@ -197,12 +336,15 @@ size_t argc=3;
 void han(void){
 	// don't forget into the node.js script to add the process.on('SIGINT',()=>process.exit(0))
 printf("ON_EXIT occured!!!\n");
+ee_emit(ee,event_down,"exit");
+	usleep(1000);
 if(ee !=NULL){
 ee_remove_listener(ee,event_hello,on_hello);
 ee_destroy(ee);
 ee=NULL;
 printf("ee must be null.\n");
 }
+close(data_socket);
 napi_status k=napi_delete_reference(shenv, dcb);
 if(k==napi_ok){printf("del_ref is ok\n");}else{printf("del_ref is not ok\n");}
 uv_close((uv_handle_t*)&async,NULL);
@@ -217,6 +359,18 @@ napi_value Init(napi_env env, napi_value exports)
 	ee=ee_new();
 	if(ee==NULL){printf("ee is NULL\n");}else{printf("ee is NOT NULL\n");}
 	atexit(han);
+	memset(&act,0,sizeof(act));
+	act.sa_handler=hdl;
+	if(sigaction(SIGINT,&act,0)){
+		printf("no sigterm\n");
+	//return;
+	}
+	sigemptyset(&mask);
+	sigaddset(&mask,SIGINT);
+	if(sigprocmask(SIG_BLOCK,&mask,&orig_mask)<0){
+	//return;
+		printf("no sigproc\n");
+	}
 napi_property_descriptor desc[2] = {
 	{"callEmit",0, callEmit, 0, 0, 0, napi_default, 0},
 	{"create_async",0,create_async, 0, 0, 0, napi_default, 0}
