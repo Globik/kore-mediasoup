@@ -46,6 +46,7 @@ va_list ap;
 	uv_poll_start(&stdout_watcher,UV_WRITABLE,stdout_cb);
 }
 static void stdin_cb(uv_poll_t*watcher,int status,int revents){
+	printf("in\n");
 char buf[4096];
 	int rv;
 	//revents=1, status=0
