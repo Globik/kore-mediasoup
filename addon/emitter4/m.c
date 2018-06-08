@@ -23,7 +23,7 @@ static uv_poll_t stdin_watcher;
 int uv_poll_init_success=0;
 int fucker=0;
 int ev_fd;
-
+char*super_str;
 uint64_t ev_u;
 //static char log_buf[4096];
 //static size_t log_buf_pos=0;
@@ -114,7 +114,6 @@ int poll_status=uvpoll_init(env,f_d);
 	}
 printf("STARTING POLL\n");
 uv_poll_start(&stdin_watcher, UV_READABLE, on_eventfd_read);
-//uv_run(uv_default_loop(),0);
 return 0;
 }
 }
@@ -131,6 +130,15 @@ static void on_eventfd_read(uv_poll_t*watcher,int status,int revents){
 	*/
 		uvpoll_cleanup();
 		return;
+	}
+	if(revents & UV_READABLE){
+	//sockin_watcher.data="what the fuck?";
+	printf("REVENTS: %d STATUS: %d\n",revents,status);
+	ssize_t mu=read(evfd,&u,sizeof(uint64_t));
+	if(mu !=sizeof(uint64_t)){printf("ev read not size64\n");}else{
+	printf("return ev read %lld\n",u);
+	uv_poll_start(&sockin_watcher, UV_WRITABLE | UV_DISCONNECT, on_sock_write);
+	
 	}
 }
 
