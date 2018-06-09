@@ -162,19 +162,10 @@ printf("some maining data: %s\n",(char*)h->data);
 }
 	
 }
-void on_disconnect(uv_poll_t*watcher,int status,int revents){
-printf("on_disconnect.\n");
-}
 int main(){
 	
 	int ret;
-	ssize_t slen;
 	struct sockaddr_un addr;
-	/*
-	u=1;
-	evfd=eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
-	if(evfd==-1){printf("evfd is -1\n");exit(EXIT_FAILURE);}else{printf("evfd is: %d\n",evfd);}
-	*/
 	
 	data_socket=socket(AF_UNIX,SOCK_SEQPACKET | O_NONBLOCK,0);
 	if(data_socket==-1){
@@ -189,30 +180,25 @@ int main(){
 	ret=connect(data_socket,(const struct sockaddr*)&addr,sizeof(struct sockaddr_un));
 if(ret==-1){
 fprintf(stderr,"the server is down.\n");
-	close(evfd);
+
 	close(data_socket);
 	exit(EXIT_FAILURE);
 }
 
 	printf("gimme your inputs %d\n",UV_DISCONNECT);
-	//slen=write(evfd,&u, sizeof(uint64_t));
-	//if(slen !=sizeof(uint64_t)){printf("!slen\n");close(evfd);close(data_socket);exit(EXIT_FAILURE);}else{printf("slen is ok\n");}
+	
 	uv_loop_t*loop=uv_default_loop();
 //uv_timer_t r;
 	uv_timer_init(loop,&r);
 	uv_poll_init(loop,&sockin_watcher, data_socket);
 	uv_poll_init(loop,&sockout_watcher,data_socket);
-	//uv_poll_init(loop,&disconnect_watcher,data_socket);
-	//uv_poll_init(loop,&stdin_watcher, evfd);
 	
-	
-//	uv_poll_start(&stdin_watcher,UV_READABLE, on_eventfd_read);
+
 	uv_poll_start(&sockout_watcher,UV_READABLE,on_sock_read);
 	uv_timer_start(&r,callback,5000,2000);
 	uv_run(loop,0);
 	printf("**bye**\n");
-	//uv_close((uv_handle_t*)&stdin_watcher,on_clo);
-	//close(evfd);
+	
 	uv_timer_stop(&r);
 	uv_close((uv_handle_t*)&r,on_clo);
 	close(data_socket);
