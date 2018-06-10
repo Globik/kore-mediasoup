@@ -184,6 +184,7 @@ k=napi_close_handle_scope(shenv,scope);
 if(k==napi_ok){printf("close_scope is ok\n");}else{printf("close_scope is not ok\n");}
 return NULL;
 }
+
 napi_value callEmit(napi_env env, napi_callback_info info)
 {
 napi_status k;

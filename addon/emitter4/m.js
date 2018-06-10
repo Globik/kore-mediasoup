@@ -1,7 +1,120 @@
 const addon=require("./build/Release/binding.node");
 const str="pupkin";//6 
+const str2="HELLO";
 const b=Buffer.from(str);
-addon.p_init(function(d){console.log('FROM ADDON: ',d);});
-addon.p_close(function(d){console.log('FROM ADDON_2: ',d);})
-addon.p_send_ev_fd(b, function(err,d){console.log('FROM ADDON_3: ',err, d);})
-process.on("SIGINT",function(){process.exit(0);});
+const b2=Buffer.from(str2);
+var read=true;
+var msgs=[];
+
+addon.p_init(function(d){console.log('FROM p_init: ',d);});
+addon.on_ready(function(d){console.log("READY: ",d);
+						  if(d=="now_readable"){
+							 ready=true;
+							  do_fuck();
+							 }
+						  });
+
+/*
+addon.p_send(b, function(err,d){
+if(err) console.log("ERI: ",err);
+console.log('FROM p_send: ', d);
+console.log("BBBBBBBBBBB: ",b);
+						   
+})
+//setTimeout(function(){
+addon.p_send(b2, function(err,d){
+console.log('FROM p_send: ',err, d);
+if(err) console.log("ERRI2: ",err);
+})
+*/
+//},9);
+//setTimeout(function(){
+//addon.p_close(function(d){console.log('FROM p_close: ',d);})
+
+//},2000);
+process.on("SIGINT",function(){
+addon.p_close(function(d){console.log("CLOSING\n");});
+	//process.exit(0);
+});
+
+function psend(s){
+let bri=Buffer.from(s);
+if(read){
+addon.p_send(bri,function(err,data){
+if(err){
+console.log("ERR: ",err);
+if(err=="what_the_fuck"){
+	read=false;
+console.log("what the fuck occured");
+msgs.push(bri)
+}
+}
+if(data)console.log('data: ',data);
+})
+
+}else{
+msgs.push(bri);
+}
+console.log("msgs: ",msgs);
+}
+
+psend(str);
+psend(str2);
+
+psend(str);
+psend(str2);
+
+/*addon.on_ready("s",function(data){
+console.log("on ready occured");
+read=true;
+do_send();
+})
+*/
+
+function do_fuck(){
+if(msgs.length>0){
+let a=msgs.shift();
+addon.p_send(a,function(err,data){
+if(err){
+console.log("ERR444: ",err);
+if(err=="what_the_fuck"){
+read=false;
+console.log("what the fuck occured 444");
+msgs.push(bri)
+}
+}
+if(data)console.log('data444444444: ',data);
+})
+
+console.log("MSGS_444444444444444444444444444444444444444444: ",msgs);
+
+}
+}
+
+
+
+function wrsend(s){
+return new Promise(function(res,rej){
+addon.p_send(p,function(err,data){
+if(err !=null){rej(err);return;}
+	res(data);
+})
+})
+}
+
+/*
+var m=[];
+m.push("a");
+m.push("b");
+if(m.length>0){
+	console.log(m);
+var s=m.shift();
+	console.log(m)
+	console.log("s: ",s);
+	s=m.shift();
+	console.log(m);
+	console.log("s2: ",s);
+	console.log(m.shift())
+	console.log(m);
+}
+*/
