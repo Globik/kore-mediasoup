@@ -8,11 +8,14 @@ var msgs=[];
 
 addon.p_init(function(d){console.log('FROM p_init: ',d);});
 addon.on_ready(function(d){console.log("READY: ",d);
-						  if(d=="now_readable"){
-							 ready=true;
-							  do_fuck();
-							 }
-						  });
+if(d=="now_readable"){
+//read=true;
+do_fuck();
+}
+});
+addon.on_msg(function(msg){
+console.log("MSG_DATA***!***: ",msg);
+})
 
 /*
 addon.p_send(b, function(err,d){
@@ -28,13 +31,13 @@ if(err) console.log("ERRI2: ",err);
 })
 */
 //},9);
-//setTimeout(function(){
-//addon.p_close(function(d){console.log('FROM p_close: ',d);})
+setTimeout(function(){
+addon.p_close(function(d){console.log('FROM p_close: ',d);})
+},2000);
 
-//},2000);
 process.on("SIGINT",function(){
 addon.p_close(function(d){console.log("CLOSING\n");});
-	//process.exit(0);
+//process.exit(0);
 });
 
 function psend(s){
@@ -72,6 +75,7 @@ do_send();
 */
 
 function do_fuck(){
+console.log("***DO_FUCK***DO_FUCK***DO_FUCK***DO_FUCK***");
 if(msgs.length>0){
 let a=msgs.shift();
 addon.p_send(a,function(err,data){
@@ -89,18 +93,12 @@ if(data)console.log('data444444444: ',data);
 console.log("MSGS_444444444444444444444444444444444444444444: ",msgs);
 
 }
+if(msgs.lentgh==0)read=true;
 }
 
 
 
-function wrsend(s){
-return new Promise(function(res,rej){
-addon.p_send(p,function(err,data){
-if(err !=null){rej(err);return;}
-	res(data);
-})
-})
-}
+
 
 /*
 var m=[];

@@ -13,8 +13,6 @@
 #include <sys/un.h>
 #include <sys/types.h>
 #include <node_api.h>
-
-
 #include <uv.h>
 #define socket_name "/home/globik/fuck"
 static uv_poll_t sockin_watcher,sockout_watcher;
@@ -25,6 +23,11 @@ bool is_read=true;
 
 napi_env shenv=NULL;
 napi_ref dcb;
+
+napi_env msgEnv=NULL;
+napi_ref msgCb;
+napi_value on_msg_cb(char*);
+uv_loop_t *loop=NULL;
 
 //static char log_buf[4096];
 //static size_t log_buf_pos=0;
@@ -38,6 +41,7 @@ static void at_pexit(void);
 static int sockfd_init(void);
 static int uvpoll_init(napi_env);
 static void uvpoll_cleanup(void);
+
 
 static void uvpoll_cleanup(){
 printf("uvpoll_cleanup() occured.\n");
@@ -98,7 +102,7 @@ return 0;
 }
 static int uvpoll_init(napi_env env){
 if(data_socket <=0) {printf("data_socket is undefined\n");return -1;}
-uv_loop_t *loop=NULL;
+//uv_loop_t *loop=NULL;
 napi_status status=napi_get_uv_event_loop(env,&loop);
 if(status==napi_ok){
 fprintf(stderr, "loop is ok\n");
@@ -107,7 +111,8 @@ fprintf(stderr,"loop is NOT ok\n");
 if(data_socket !=0){close(data_socket);data_socket=0;}
 return -1;
 }
-	
+	int kak=uv_loop_alive(loop);
+	printf("IS ALIVE2: %d\n",kak);
 int s=uv_poll_init(loop, &sockin_watcher, data_socket);
 if(0 !=s){
 perror("poll init failed: ");
@@ -163,11 +168,12 @@ return;
 }
 buffer[ret-1]=0;
 fprintf(stderr,"result => %s\n",buffer);
+	on_msg_cb(buffer);
+	memset(buffer,0,512);
 }else if((revents == UV_DISCONNECT) || revents==5){
 	//cleanup
-	printf("in uv disconnect event and 5\n");
-	//uv_poll_init_success=0;
-	uvpoll_cleanup();
+printf("in uv disconnect event and 5\n");
+uvpoll_cleanup();
 }else{
 fprintf(stderr,"unknown event in sock_read.\n");
 }
@@ -232,15 +238,10 @@ pfucker();
 
 napi_value p_init(napi_env env, napi_callback_info info)
 {
-//napi_status k;
 size_t argc = 2;
 napi_value args[2];
 napi_get_cb_info(env, info, &argc, args, NULL, NULL);
-if(argc == 1){
-printf("OK in a number of argc. A single argument as expected: %d\n", argc);
-}else{
-printf("argc is %d\n", argc);
-}
+
 napi_valuetype val0;
 napi_typeof(env, args[0], &val0);
 if(val0 == napi_function){
@@ -248,21 +249,19 @@ printf("OK, args[0] is a function.\n");
 }else{
 printf("args[0] is not a function.\n");
 }
-napi_valuetype val1;
-napi_typeof(env, args[1], &val1);
-if(val1 == napi_undefined){
-printf("args[1] is undefined.\n");
-}else{
-printf("Additional args[1] should be undefined.\n");
-}
+
 
 napi_value argv[1];
 int a=sockfd_init();
 int b=uvpoll_init(env);
-
-	printf("sockfd_init(): %d\n",a);
-	printf("uvpoll_init(); %d\n",b);
-	
+printf("sockfd_init(): %d\n",a);
+printf("uvpoll_init(); %d\n",b);
+	if(a==-1){
+	//napi_fatal_error("p_init",NAPI_AUTO_LENGTH,"not connected.",NAPI_AUTO_LENGTH);
+		napi_throw_error(env,NULL,"No Server.");
+		return NULL;
+	}
+// if -1 throw exeption
 const char * str = "start_result";
 size_t str_len = strlen(str);
 napi_create_string_utf8(env, str, str_len, argv);
@@ -284,14 +283,13 @@ napi_value pfucker(){
 //a++;
 napi_status k;
 printf("fucker\n");
-if(shenv == NULL){printf("NULLLLLL\n"); return NULL;}
+if(shenv == NULL){printf("shenv is NULL\n"); return NULL;}
 napi_value cbu;
 napi_handle_scope scope;
 napi_open_handle_scope(shenv,&scope);
 napi_value argv[1];
 const char * str = "now_readable";
 size_t str_len = strlen(str);
-printf("suka\n");
 k=napi_create_string_utf8(shenv, str, str_len, argv);
 if(k==napi_ok){printf("cr_str1 is ok\n");}else{printf("cr_str1 is not ok\n");}
 k=napi_get_reference_value(shenv, dcb, &cbu);
@@ -306,19 +304,40 @@ if(k==napi_ok){printf("close_scope is ok\n");}else{printf("close_scope is not ok
 return NULL;
 }
 
+napi_value on_msg_cb(char*msg_str){
 
+napi_status k;
+printf("on_msg_cb\n");
+if(msgEnv == NULL){printf("msgEnv is NULL.\n"); return NULL;}
+napi_value cbu;
+napi_handle_scope scope;
+napi_open_handle_scope(shenv,&scope);
+napi_value argv[1];
+const char * str = msg_str;//"now_readable";
+size_t str_len = strlen(str);
+printf("suka\n");
+k=napi_create_string_utf8(shenv, str, str_len, argv);
+if(k==napi_ok){printf("cr_str1 is ok\n");}else{printf("cr_str1 is not ok\n");}
+k=napi_get_reference_value(msgEnv, msgCb, &cbu);
+if(k==napi_ok)printf("get_ref is ok\n");
+napi_value global;
+k=napi_get_global(shenv,&global);
+if(k==napi_ok){printf("get_glob is ok\n");}else{printf("get_glob is not ok\n");}
+k=napi_call_function(msgEnv, global, cbu, 2, argv, NULL);
+if(k==napi_ok){printf("call_func is ok\n");}else{printf("call_func is not ok\n");return NULL;}
+k=napi_close_handle_scope(shenv,scope);
+if(k==napi_ok){printf("close_scope is ok\n");}else{printf("close_scope is not ok\n");}
+return NULL;
+}
 
 napi_value p_close(napi_env env, napi_callback_info info)
 {
-//napi_status k;
+if(uv_poll_init_success==0)return NULL;
+napi_status k;
 size_t argc = 2;
 napi_value args[2];
 napi_get_cb_info(env, info, &argc, args, NULL, NULL);
-if(argc == 1){
-printf("OK in a number of argc. A single argument as expected: %d\n", argc);
-}else{
-printf("argc is %d\n", argc);
-}
+
 napi_valuetype val0;
 napi_typeof(env, args[0], &val0);
 if(val0 == napi_function){
@@ -326,15 +345,22 @@ printf("OK, args[0] is a function.\n");
 }else{
 printf("args[0] is not a function.\n");
 }
-napi_valuetype val1;
-napi_typeof(env, args[1], &val1);
-if(val1 == napi_undefined){
-printf("args[1] is undefined.\n");
-}else{
-printf("Additional args[1] should be undefined.\n");
-}
-	//uv_poll_init_success=0
+
 uvpoll_cleanup();
+if(shenv !=NULL){
+printf("shenv is not NULL\n");
+int kak=uv_loop_alive(loop);
+printf("IS ALIVE: %d\n",kak);
+k=napi_delete_reference(shenv, dcb);
+if(k==napi_ok){ printf("del_ref is ok\n");}else{printf("del_ref is not ok\n");}
+shenv=NULL;	
+}
+if(msgEnv !=NULL){
+printf("msgEnv is NOT NULL.\n");
+k=napi_delete_reference(msgEnv, msgCb);
+if(k==napi_ok){ printf("del_ref msgCb is OK.\n");}else{printf("del_ref msgCb is NOT OK.\n");}
+msgEnv=NULL;	
+}
 napi_value argv[1];
 
 const char * str = "close_result";
@@ -354,15 +380,12 @@ return NULL;
 }
 
 napi_value on_ready(napi_env env,napi_callback_info info){
+if(uv_poll_init_success==0)return NULL;
 napi_status k;
 size_t argc = 2;
 napi_value args[2];
 napi_get_cb_info(env, info, &argc, args, NULL, NULL);
-if(argc == 1){
-printf("OK in a number of argc. A single argument as expected: %d\n", argc);
-}else{
-printf("argc is %d\n", argc);
-}
+
 napi_valuetype val0;
 napi_typeof(env, args[0], &val0);
 if(val0 == napi_function){
@@ -384,7 +407,7 @@ shenv=env;
 napi_value argv[1];
 k=napi_create_reference(env, args[0], 10, &dcb);
 if(k==napi_ok){printf("create reference is ok\n");}else{printf("create reference is not ok\n");}
-const char * str = "start ****READY****";
+const char * str = "start ****ON_READY****";
 size_t str_len = strlen(str);
 napi_create_string_utf8(env, str, str_len, argv);
 napi_value global;
@@ -402,46 +425,35 @@ return NULL;
 
 napi_value p_send(napi_env env, napi_callback_info info)
 {
+//if(uv_poll_init_success==0)return NULL;
 napi_status k;
 size_t argc = 2; // input buffer and callback
 napi_value args[2]; // callback
 napi_get_cb_info(env, info, &argc, args, NULL, NULL);
-if(argc == 1){
-printf("OK in a number of argc. A single argument as expected: %d\n", argc);
-}else{
-printf("argc is %d\n", argc);
-}
+
 //napi_handle_scope scope;
 //napi_open_handle_scope(env,&scope);
 //const unsigned char*input;
-	char*input;char*muka;
-	//char buffer[128];
-	size_t len;
-	bool is_buf;
-	k=napi_is_buffer(env,args[0],&is_buf);
-	if(k !=napi_ok)printf("kstatus buf failed.\n");
-	if(is_buf){
+char*input;char*muka;
+size_t len;
+bool is_buf;
+k=napi_is_buffer(env,args[0],&is_buf);
+if(k !=napi_ok)printf("kstatus buf failed.\n");
+if(is_buf){
 printf("IS BUFFER!\n");
-		//memset(buffer,0,128);
-	k=napi_get_buffer_info(env,args[0],(void**)(&input),&len);
-	if(k !=napi_ok){
+k=napi_get_buffer_info(env,args[0],(void**)(&input),&len);
+if(k !=napi_ok){
 printf("failed to get buffer info input.\n");
 return NULL;
-	}
-		//memset(input,0,128);
-		//input[len-1]=0;
-		
-		//strcpy(buffer,len+1);
-		//buffer[len+1]=0;
-		printf("length: %d\n",len);
-		//printf("input : %s\n",input);
-		
-		//printf("buffer: %s\n",buffer);
-		input[len]=0;
-		muka=input;
-		printf("MUKA: %s\n",muka);
-	}else{printf("IS NOT A BUFFER\n");}
-	len=0;
+}
+printf("length: %d\n",len);
+input[len]=0;
+muka=input;
+printf("INPUT: %s\n",muka);
+}else{
+printf("IS NOT A BUFFER\n");
+}
+len=0;
 	
 napi_valuetype val0;
 napi_typeof(env, args[1], &val0);
@@ -451,13 +463,17 @@ printf("OK, args[1] is a function.\n");
 printf("args[1] is not a function.\n");
 
 }
-	napi_value argv[2];// for cb args: err, data
+if(uv_poll_init_success==0){
+printf("FD_POLL is NOT initialised.\n");
+return NULL;
+}
+napi_value argv[2];// for cb args: err, data
 
-	//return NULL;
-//write_start("mama\0", 5);
-	if(is_read){
-	int mu=write_start(muka,len);
-	printf("MU??: %d\n",mu);
+if(is_read){
+int kak=uv_loop_alive(loop);
+printf("IS ALIVE_#############: %d\n",kak);
+int mu=write_start(muka,len);
+printf("MU??: %d\n",mu);
 const char * str = "write_result";
 size_t str_len = strlen(str);
 napi_create_string_utf8(env, str, str_len, &argv[1]);
@@ -469,11 +485,6 @@ napi_create_string_utf8(env, str, str_len, &argv[0]);
 napi_get_null(env,&argv[1]);
 }
 
-
-//const char * str = "write_result";
-//size_t str_len = strlen(str);
-//napi_create_string_utf8(env, str, str_len, &argv[1]);
-//napi_get_null(env,&argv[0]);
 napi_value global;
 napi_get_global(env, &global);
 napi_value cb = args[1];//args[0] is an input buffer, args[1] is output -> callback(err,data)=>err is &argv[0], data is &argv[1]
@@ -489,28 +500,72 @@ return NULL;
 return NULL;
 }
 
+napi_value on_msg(napi_env env,napi_callback_info info){
+if(uv_poll_init_success==0)return NULL;
+napi_status k;
+size_t argc = 2;
+napi_value args[2];
+napi_get_cb_info(env, info, &argc, args, NULL, NULL);
+
+napi_valuetype val0;
+napi_typeof(env, args[0], &val0);
+if(val0 == napi_function){
+printf("OK, args[0] is a function.\n");
+}else{
+printf("args[0] is not a function.\n");
+}
+
+if(msgEnv==NULL){
+printf("SHENV is NULL\n");
+msgEnv=env;
+}
+napi_value argv[1];
+k=napi_create_reference(env, args[0], 2, &msgCb);
+if(k==napi_ok){printf("create reference MSGCB is ok\n");}else{printf("create reference MSGCB is not ok\n");}
+const char * str = "SENDING_MESSAGE_TO_JAVASCRIPT_PREPARE***";
+size_t str_len = strlen(str);
+napi_create_string_utf8(env, str, str_len, argv);
+napi_value global;
+napi_get_global(env, &global);
+napi_value cb = args[0];
+napi_status status = napi_call_function(env, global, cb, 2, argv, NULL);
+if(status == napi_ok){
+printf("napi_status is OK! Event fired!\n");
+}else{
+printf("napi_status is NOT OK!\n");
+return NULL;
+}
+return NULL;
+}
+
 static void at_pexit(){
 printf("at_exit cb occured.\n");
-uvpoll_cleanup();
+//uvpoll_cleanup();
 	//usleep(100000);
+	/*
 	if(shenv !=NULL){
 		printf("shenv is not NULL\n");
-	//napi_status k=napi_delete_reference(shenv, dcb);
-//if(k==napi_ok){ printf("del_ref is ok\n");}else{printf("del_ref is not ok\n");}
+		
+		int kak=uv_loop_alive(loop);
+		printf("IS ALIVE: %d\n",kak);
+	napi_status k=napi_delete_reference(shenv, dcb);
+if(k==napi_ok){ printf("del_ref is ok\n");}else{printf("del_ref is not ok\n");}
 
 	shenv=NULL;	
 	}
-	
+	*/
+	//uvpoll_cleanup();
 }
 
 napi_value Init(napi_env env, napi_value exports)
 {
 atexit(at_pexit);
-napi_property_descriptor desc[4] = {
+napi_property_descriptor desc[5] = {
 	{"p_init",0, p_init, 0, 0, 0, napi_default, 0},
 	{"p_close",0,p_close, 0, 0, 0, napi_default, 0},
 	{"p_send",0,p_send,0,0,0,napi_default,0},
-	{"on_ready",0,on_ready,0,0,0,napi_default,0}
+	{"on_ready",0,on_ready,0,0,0,napi_default,0},
+	{"on_msg",0,on_msg,0,0,0,napi_default,0}
 };
 napi_define_properties(env, exports, sizeof(desc)/sizeof(*desc), desc);
 return exports;
