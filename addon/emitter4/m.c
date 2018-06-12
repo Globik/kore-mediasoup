@@ -243,36 +243,43 @@ napi_value args[2];
 napi_get_cb_info(env, info, &argc, args, NULL, NULL);
 
 napi_valuetype val0;
-napi_typeof(env, args[0], &val0);
+napi_typeof(env, args[1], &val0);
 if(val0 == napi_function){
-printf("OK, args[0] is a function.\n");
+printf("OK, args[1] is a function.\n");
 }else{
-printf("args[0] is not a function.\n");
+printf("args[1] is not a function.\n");
 }
 
 
-napi_value argv[1];
+napi_value argv[2];
 int a=sockfd_init();
 int b=uvpoll_init(env);
 printf("sockfd_init(): %d\n",a);
 printf("uvpoll_init(); %d\n",b);
-	if(a==-1){
-	//napi_fatal_error("p_init",NAPI_AUTO_LENGTH,"not connected.",NAPI_AUTO_LENGTH);
-		napi_throw_error(env,NULL,"No Server.");
-		return NULL;
-	}
-// if -1 throw exeption
-const char * str = "start_result";
+if((a || b) !=0){
+printf("about failing\n");
+//napi_fatal_error("p_init",NAPI_AUTO_LENGTH,"not connected.",NAPI_AUTO_LENGTH);
+//napi_throw_error(env,NULL,"No Server.");
+const char * str = "Server is down. Or uv_poll failed.";
 size_t str_len = strlen(str);
-napi_create_string_utf8(env, str, str_len, argv);
+napi_create_string_utf8(env, str, str_len, &argv[0]);
+napi_get_null(env,&argv[1]);
+}
+
+if((a&&b)==0){ 
+const char * str3 = "start_result";
+size_t str_len3 = strlen(str3);
+napi_create_string_utf8(env, str3, str_len3, &argv[1]);
+napi_get_null(env,&argv[0]);
+}
 napi_value global;
 napi_get_global(env, &global);
-napi_value cb = args[0];
+napi_value cb = args[1];
 napi_status status = napi_call_function(env, global, cb, 2, argv, NULL);
 if(status == napi_ok){
 printf("napi_status is OK! Event fired!\n");
 }else{
-printf("napi_status is NOT OK!\n");
+printf("napi_status is NOT OK! CALL _FUNC\n");
 return NULL;
 }
 return NULL;
@@ -303,7 +310,6 @@ k=napi_close_handle_scope(shenv,scope);
 if(k==napi_ok){printf("close_scope is ok\n");}else{printf("close_scope is not ok\n");}
 return NULL;
 }
-
 napi_value on_msg_cb(char*msg_str){
 
 napi_status k;
@@ -329,7 +335,6 @@ k=napi_close_handle_scope(shenv,scope);
 if(k==napi_ok){printf("close_scope is ok\n");}else{printf("close_scope is not ok\n");}
 return NULL;
 }
-
 napi_value p_close(napi_env env, napi_callback_info info)
 {
 if(uv_poll_init_success==0)return NULL;
@@ -378,7 +383,6 @@ return NULL;
 }
 return NULL;
 }
-
 napi_value on_ready(napi_env env,napi_callback_info info){
 if(uv_poll_init_success==0)return NULL;
 napi_status k;
@@ -422,7 +426,6 @@ return NULL;
 }
 return NULL;
 }
-
 napi_value p_send(napi_env env, napi_callback_info info)
 {
 //if(uv_poll_init_success==0)return NULL;

@@ -1,11 +1,21 @@
-const addon=require("./build/Release/binding.node");
+
+const Worker=require('./worker.js');
+const some_path="/home/globik/fuck";
 const str="pupkin";//6 
 const str2="HELLO";
 const b=Buffer.from(str);
 const b2=Buffer.from(str2);
-var read=true;
-var msgs=[];
 
+const w=new Worker(some_path);
+w.on("connect",d=>{
+console.log("out ***on_connect A?:*** ",d);
+});
+
+w.on("erroro",function(e){
+console.log("out on_err: ",e);
+});
+w.create_client();
+/*
 addon.p_init(function(d){console.log('FROM p_init: ',d);});
 addon.on_ready(function(d){console.log("READY: ",d);
 if(d=="now_readable"){
@@ -16,7 +26,7 @@ do_fuck();
 addon.on_msg(function(msg){
 console.log("MSG_DATA***!***: ",msg);
 })
-
+*/
 /*
 addon.p_send(b, function(err,d){
 if(err) console.log("ERI: ",err);
@@ -31,15 +41,13 @@ if(err) console.log("ERRI2: ",err);
 })
 */
 //},9);
+/*
 setTimeout(function(){
 addon.p_close(function(d){console.log('FROM p_close: ',d);})
 },2000);
+*/
 
-process.on("SIGINT",function(){
-addon.p_close(function(d){console.log("CLOSING\n");});
-//process.exit(0);
-});
-
+/*
 function psend(s){
 let bri=Buffer.from(s);
 if(read){
@@ -60,12 +68,13 @@ msgs.push(bri);
 }
 console.log("msgs: ",msgs);
 }
+*/
 
-psend(str);
-psend(str2);
+//psend(str);
+//psend(str2);
 
-psend(str);
-psend(str2);
+//psend(str);
+//psend(str2);
 
 /*addon.on_ready("s",function(data){
 console.log("on ready occured");
@@ -73,7 +82,7 @@ read=true;
 do_send();
 })
 */
-
+/*
 function do_fuck(){
 console.log("***DO_FUCK***DO_FUCK***DO_FUCK***DO_FUCK***");
 if(msgs.length>0){
@@ -96,7 +105,7 @@ console.log("MSGS_444444444444444444444444444444444444444444: ",msgs);
 if(msgs.lentgh==0)read=true;
 }
 
-
+*/
 
 
 
