@@ -14,7 +14,7 @@
 #include <sys/types.h>
 #include <node_api.h>
 #include <uv.h>
-#define socket_name "/home/globik/fuck"
+//#define socket_name "/home/globik/fuck"
 static uv_poll_t sockin_watcher,sockout_watcher;
 static uv_os_sock_t data_socket=0;
 static volatile int uv_poll_init_success=0;
@@ -38,7 +38,7 @@ static int write_start(char*,size_t);
 
 static void on_clo(uv_handle_t*);
 static void at_pexit(void);
-static int sockfd_init(void);
+static int sockfd_init(char*);
 static int uvpoll_init(napi_env);
 static void uvpoll_cleanup(void);
 
@@ -79,7 +79,7 @@ if(h->data !=NULL) free(h->data);
 }
 }
 
-static int sockfd_init(){
+static int sockfd_init(char*socket_name){
 int ret;
 struct sockaddr_un addr;
 data_socket=socket(AF_UNIX,SOCK_SEQPACKET | O_NONBLOCK,0);
@@ -238,6 +238,11 @@ pfucker();
 
 napi_value p_init(napi_env env, napi_callback_info info)
 {
+	char buf[128];
+	size_t bs=128;
+	size_t cop;
+napi_value global;
+napi_status status;
 size_t argc = 2;
 napi_value args[2];
 napi_get_cb_info(env, info, &argc, args, NULL, NULL);
@@ -249,10 +254,43 @@ printf("OK, args[1] is a function.\n");
 }else{
 printf("args[1] is not a function.\n");
 }
-
-
 napi_value argv[2];
-int a=sockfd_init();
+napi_valuetype vstr;
+napi_typeof(env,args[0],&vstr);
+if(vstr==napi_string){
+printf("is a String.\n");
+	
+
+status=napi_get_value_string_utf8(env,args[0],buf,bs,&cop);
+if(status==napi_ok){
+printf("status get string is ik\n");
+}else{
+printf("status get str is Not ok.\n");
+}
+	buf[cop]=0;
+	printf("strbuf: %s\n",buf);
+}else{
+printf("is not a string.\n");
+const char * str4 = "Is not a string.";
+size_t str_len4 = strlen(str4);
+napi_create_string_utf8(env, str4, str_len4, &argv[0]);
+napi_get_null(env,&argv[1]);
+	
+napi_get_global(env, &global);
+napi_value cb = args[1];
+napi_status status = napi_call_function(env, global, cb, 2, argv, NULL);
+if(status == napi_ok){
+printf("napi_status is OK! Event fired!\n");
+}else{
+printf("napi_status is NOT OK! CALL _FUNC\n");
+
+}
+return NULL;
+}
+
+
+//napi_value argv[2];
+int a=sockfd_init(buf);
 int b=uvpoll_init(env);
 printf("sockfd_init(): %d\n",a);
 printf("uvpoll_init(); %d\n",b);
@@ -272,10 +310,11 @@ size_t str_len3 = strlen(str3);
 napi_create_string_utf8(env, str3, str_len3, &argv[1]);
 napi_get_null(env,&argv[0]);
 }
-napi_value global;
+//napi_value global;
 napi_get_global(env, &global);
 napi_value cb = args[1];
-napi_status status = napi_call_function(env, global, cb, 2, argv, NULL);
+
+status = napi_call_function(env, global, cb, 2, argv, NULL);
 if(status == napi_ok){
 printf("napi_status is OK! Event fired!\n");
 }else{
@@ -397,13 +436,7 @@ printf("OK, args[0] is a function.\n");
 }else{
 printf("args[0] is not a function.\n");
 }
-napi_valuetype val1;
-napi_typeof(env, args[1], &val1);
-if(val1 == napi_undefined){
-printf("args[1] is undefined.\n");
-}else{
-printf("Additional args[1] should be undefined.\n");
-}
+
 if(shenv==NULL){
 printf("SHENV is NULL\n");
 shenv=env;
@@ -504,6 +537,7 @@ return NULL;
 }
 
 napi_value on_msg(napi_env env,napi_callback_info info){
+printf("****ONONON MSG MSG***\n");
 if(uv_poll_init_success==0)return NULL;
 napi_status k;
 size_t argc = 2;
@@ -519,7 +553,7 @@ printf("args[0] is not a function.\n");
 }
 
 if(msgEnv==NULL){
-printf("SHENV is NULL\n");
+printf("************************msgENV is NULL*******************************************\n");
 msgEnv=env;
 }
 napi_value argv[1];

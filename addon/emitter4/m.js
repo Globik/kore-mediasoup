@@ -6,7 +6,7 @@ const str2="HELLO";
 const b=Buffer.from(str);
 const b2=Buffer.from(str2);
 
-const w=new Worker(some_path);
+const w=new Worker();
 w.on("connect",d=>{
 console.log("out ***on_connect A?:*** ",d);
 });
@@ -14,37 +14,19 @@ console.log("out ***on_connect A?:*** ",d);
 w.on("erroro",function(e){
 console.log("out on_err: ",e);
 });
-w.create_client();
-/*
-addon.p_init(function(d){console.log('FROM p_init: ',d);});
-addon.on_ready(function(d){console.log("READY: ",d);
-if(d=="now_readable"){
-//read=true;
-do_fuck();
-}
-});
-addon.on_msg(function(msg){
-console.log("MSG_DATA***!***: ",msg);
+w.create_client(some_path);
+//w.ready_parat();
+w.psend(b);
+//w.psend(b2);
+//w.psend(b);
+//w.psend(b2);
+w.on('message',msg=>{
+console.log('***MESSAGE***: ',msg);
 })
-*/
 /*
-addon.p_send(b, function(err,d){
-if(err) console.log("ERI: ",err);
-console.log('FROM p_send: ', d);
-console.log("BBBBBBBBBBB: ",b);
-						   
-})
-//setTimeout(function(){
-addon.p_send(b2, function(err,d){
-console.log('FROM p_send: ',err, d);
-if(err) console.log("ERRI2: ",err);
-})
-*/
-//},9);
-/*
-setTimeout(function(){
-addon.p_close(function(d){console.log('FROM p_close: ',d);})
-},2000);
+setTimeout(()=>{
+w.psend(b2);
+},1000)
 */
 
 /*
@@ -78,8 +60,8 @@ console.log("msgs: ",msgs);
 
 /*addon.on_ready("s",function(data){
 console.log("on ready occured");
-read=true;
-do_send();
+//read=true;
+do_fuck();
 })
 */
 /*
