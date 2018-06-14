@@ -282,7 +282,7 @@ napi_status status = napi_call_function(env, global, cb, 2, argv, NULL);
 if(status == napi_ok){
 printf("napi_status is OK! Event fired!\n");
 }else{
-printf("napi_status is NOT OK! CALL _FUNC\n");
+printf("napi_status is NOT OK! CALL FUUCKER*** _FUNC\n");
 
 }
 return NULL;
@@ -305,20 +305,21 @@ napi_get_null(env,&argv[1]);
 }
 
 if((a&&b)==0){ 
+	printf("A&&B==0!\n");
 const char * str3 = "start_result";
 size_t str_len3 = strlen(str3);
 napi_create_string_utf8(env, str3, str_len3, &argv[1]);
 napi_get_null(env,&argv[0]);
 }
-//napi_value global;
-napi_get_global(env, &global);
+napi_value globa;
+napi_get_global(env, &globa);
 napi_value cb = args[1];
 
-status = napi_call_function(env, global, cb, 2, argv, NULL);
+status = napi_call_function(env, globa, cb, 2, argv, NULL);
 if(status == napi_ok){
-printf("napi_status is OK! Event fired!\n");
+printf("napi_status is OK! from p_init Event fired!\n");
 }else{
-printf("napi_status is NOT OK! CALL _FUNC\n");
+printf("napi_status is NOT OK! DDDDDDDDDDUCKER!!*** CALL _FUNC\n");
 return NULL;
 }
 return NULL;
@@ -591,20 +592,49 @@ if(k==napi_ok){ printf("del_ref is ok\n");}else{printf("del_ref is not ok\n");}
 	shenv=NULL;	
 	}
 	*/
-	//uvpoll_cleanup();
+	uvpoll_cleanup();
 }
 
 napi_value Init(napi_env env, napi_value exports)
 {
 atexit(at_pexit);
-napi_property_descriptor desc[5] = {
-	{"p_init",0, p_init, 0, 0, 0, napi_default, 0},
-	{"p_close",0,p_close, 0, 0, 0, napi_default, 0},
-	{"p_send",0,p_send,0,0,0,napi_default,0},
+	/*
+napi_property_descriptor desc[] = {
+// utf8_name,napi_val name,napi_cb method,getter,setter,napi_val val,napi_prop_at ats, void*data
+	{"p_send",0, p_send, 0, 0, 0, napi_default, 0},
+	{"p_close",NULL,p_close, 0, 0, p_close, napi_enumerable, 0},
+	{"p_init",0,p_init,0,0,0,napi_default,0},
 	{"on_ready",0,on_ready,0,0,0,napi_default,0},
 	{"on_msg",0,on_msg,0,0,0,napi_default,0}
 };
-napi_define_properties(env, exports, sizeof(desc)/sizeof(*desc), desc);
+napi_define_properties(env, exports, sizeof(desc)/sizeof(desc[0]), desc);
+	*/
+	napi_status status;
+	napi_value fn,fn1,fn2,fn3,fn4;
+	status=napi_create_function(env,NULL,0,p_init,NULL,&fn);
+	if(status !=napi_ok){printf("create func p_init fail.\n");return NULL;}
+	status=napi_set_named_property(env,exports,"p_init",fn);
+	if(status !=napi_ok){printf("set prop p_init fail.\n");return NULL;}
+	
+	status=napi_create_function(env,NULL,0, p_send,NULL,&fn1);
+	if(status !=napi_ok){printf("create func p_send fail.\n");return NULL;}
+	status=napi_set_named_property(env,exports,"p_send",fn1);
+	if(status !=napi_ok){printf("set prop p_send fail.\n");return NULL;}
+	
+	status=napi_create_function(env,NULL,0,p_close,NULL,&fn2);
+	if(status !=napi_ok){printf("create func p_close fail.\n");return NULL;}
+	status=napi_set_named_property(env,exports,"p_close",fn2);
+	if(status !=napi_ok){printf("set prop p_close fail.\n");return NULL;}
+	
+	status=napi_create_function(env,NULL,0,on_ready,NULL,&fn3);
+	if(status !=napi_ok){printf("create func on_ready fail.\n");return NULL;}
+	status=napi_set_named_property(env,exports,"on_ready",fn3);
+	if(status !=napi_ok){printf("set prop on_ready fail.\n");return NULL;}
+	
+	status=napi_create_function(env,NULL,0,on_msg,NULL,&fn4);
+	if(status !=napi_ok){printf("create func on_msg fail.\n");return NULL;}
+	status=napi_set_named_property(env,exports,"on_msg",fn4);
+	if(status !=napi_ok){printf("set prop on_msg fail.\n");return NULL;}
 return exports;
 }
 NAPI_MODULE(addon,Init)

@@ -5,24 +5,39 @@ const str="pupkin";//6
 const str2="HELLO";
 const b=Buffer.from(str);
 const b2=Buffer.from(str2);
-
-const w=new Worker();
+function dura(some_path){
+const w=new Worker(some_path);
+//w.create_client(some_path);
 w.on("connect",d=>{
 console.log("out ***on_connect A?:*** ",d);
+w.emit("nina","nina_data");
 });
-
+//w.create_client(some_path);
 w.on("erroro",function(e){
 console.log("out on_err: ",e);
 });
-w.create_client(some_path);
+//w.create_client(some_path);
 //w.ready_parat();
-w.psend(b);
+//w.psend(str);
 //w.psend(b2);
 //w.psend(b);
 //w.psend(b2);
+	/*
 w.on('message',msg=>{
 console.log('***MESSAGE***: ',msg);
 })
+*/
+w.create_client(some_path);
+return {client:w,send(s){return this.client.psend(s);},on_connect(c){w.on('nina',d=>{console.log('c7777777777777777777777777777onn');c(d)})},
+	  onm(cb){this.client.on('message',g=>{cb(g)})}
+	   }
+}
+let d=dura(some_path);
+d.on_connect(p=>{console.log("***NjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjINA***",p)})
+d.onm(j=>{console.log("***PPPPPPPPPPPPPPPPPPPPPPP***: ",j);})
+//d.on("connect",(d)=>{console.log("coooooooooo")});
+//d.send(str);
+
 /*
 setTimeout(()=>{
 w.psend(b2);
