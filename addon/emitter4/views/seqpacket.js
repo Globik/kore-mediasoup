@@ -1,3 +1,4 @@
+// some basic concept "ping-pong" test with Janus phunix transport with type SOCK_SEQPACKET
 const seqpacket=n=>{
 return `<html><head><title>seqpacket</title></head><body><h2>Hello</h2>
 <button onclick="sendi();">ping</button><br><br>

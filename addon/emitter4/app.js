@@ -3,7 +3,7 @@ const PORT=3000;
 const WebSocket=require('/home/globik/alikon/node_modules/ws');
 const render=require('koa-rend');
 const Router=require('koa-router');
-const some_path="/home/globik/fuck";
+const unix_sock_path="/home/globik/fuck"; // I am sorry for that but I was so tired
 const EventEmitter=require('events');
 const ev=new EventEmitter();
 
@@ -15,9 +15,9 @@ w.on('connect',(v)=>{console.log("CONNECT",v)})
 w.on('erroro',e=>console.log('ERRORO: ',e))
 w.on('message',msg=>{
 //console.log('msg came from seq_sock_server: ',msg);
-ev.emit('suka',msg);
+ev.emit('janus_msg',msg);
 })
-w.create_client(some_path)
+w.create_client(unix_sock_path)
 //w.psend("pupkin");
 
 render(app,{root:'views', development:true});
@@ -29,21 +29,15 @@ app.on('error',(err,ctx)=>{console.log(err.message,ctx.request.url)})
 
 const servak=app.listen(PORT);
 const wss=new WebSocket.Server({server:servak})
-function babki(ws,bool){
-console.log("ON SUKA OCCURED");
-function buka(m){
-//console.log("ON BSUUUUUUUUKA", m);
-ws.send(m);
-}
-if(bool){
-ev.on('suka',buka)
-}else{ev.removeListener('suka',buka)}
-}
 
-wss.on('connection',(ws,req)=>{
+
+wss.on('connection',function websock_community(ws,req){
 console.log("websock client opened!");
-//ev.on('suka',babki);
-babki(ws,true)
+function on_janus_msg(message){
+if(ws.readyState==1)ws.send(message);
+}
+ev.on('janus_msg',on_janus_msg);
+
 ws.send("Hi from server!");
 ws.on('message',msg=>{
 console.log("msg came: ",msg)
@@ -51,7 +45,7 @@ w.psend(msg);
 })
 ws.on('close',()=>{
 console.log('ws closed')
-babki(ws,false);
+ev.removeListener('janus_msg', on_janus_msg);
 })
 })
 

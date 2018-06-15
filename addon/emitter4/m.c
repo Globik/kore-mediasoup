@@ -140,7 +140,8 @@ return 0;
 }
 
 static void on_sock_read(uv_poll_t*watcher,int status,int revents){
-char buffer[512];
+size_t bs=512*6;
+char buffer[bs];
 fucker++;
 //printf("fucker: %d",fucker);
 printf("revents: %d, status: %d\n",revents,status);
@@ -148,16 +149,16 @@ if(status !=0){printf(red "status: %d\n" rst,status);return;}
 
 if(revents == UV_READABLE){
 		
-int	ret=read(data_socket,buffer,512);
+int	ret=read(data_socket,buffer,bs);
 if(ret==-1){
 perror("read");
 fprintf(stderr,red "read error occured in sock_read. %d\n" rst, ret);
 return;
 }
-buffer[ret-1]=0;
+buffer[ret]=0;
 //fprintf(stderr,"result => %s\n",buffer);
 	on_msg_cb(buffer);
-	memset(buffer,0,512);
+	memset(buffer,0,bs);
 }else if((revents == UV_DISCONNECT) || revents==5){
 	//cleanup
 printf(red "in uv disconnect event and 5\n" rst);
@@ -179,7 +180,7 @@ printf(red "fucking status: %d\n" rst,status);
 return;
 }
 
-printf("BUKA write_sock: %d\n", buka);
+//printf("BUKA write_sock: %d\n", buka);
 printf("write_sock: MEVENTS: %d STATUS: %d\n",mevents,status);
 if(mevents == UV_WRITABLE){
 //fprintf(stderr, "Uv writable\n");
@@ -325,14 +326,23 @@ napi_value argv[1];
 const char * str = msg_str;//"now_readable";
 size_t str_len = strlen(str);
 k=napi_create_string_utf8(shenv, str, str_len, argv);
-if(k !=napi_ok){printf(red "cr_str1 in on_msg_cb is NOT ok!\n" rst);return NULL;}
+if(k !=napi_ok){printf(red "cr_str1 in on_msg_cb is NOT ok!\n" rst);
+			//return NULL;
+			   }
 k=napi_get_reference_value(msgEnv, msgCb, &cbu);
-if(k !=napi_ok){printf(red "get_ref in on_msg_cb is NOT ok!\n" rst);return NULL;}
+if(k !=napi_ok){printf(red "get_ref in on_msg_cb is NOT ok!\n" rst);
+			//return NULL;
+			   }
 napi_value global;
 k=napi_get_global(shenv,&global);
-if(k !=napi_ok){printf(red "get_glob in on_msg_cb is NOT ok!\n" rst);return NULL;}
+if(k !=napi_ok){printf(red "get_glob in on_msg_cb is NOT ok!\n" rst);
+				//return NULL;
+			   }
+if(shenv !=NULL){printf(yel "shenv is not null.\n" rst);}else{printf(yel "shenv is NULL ok\n" rst);}
 k=napi_call_function(msgEnv, global, cbu, 2, argv, NULL);
-if(k !=napi_ok){printf(red "call_func in on_msg_cb is NOT ok!\n" rst);return NULL;}
+if(k !=napi_ok){printf(red "call_func in on_msg_cb is NOT ok!\n" rst);
+//return NULL;
+}
 k=napi_close_handle_scope(shenv,scope);
 if(k !=napi_ok){printf(red "close_scope is not ok\n" rst);}
 return NULL;

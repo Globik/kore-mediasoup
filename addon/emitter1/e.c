@@ -572,11 +572,26 @@ napi_value Init(napi_env env, napi_value exports)
 	uv_signal_init(loop,&sig);
 	uv_signal_start(&sig,signal_handler,SIGINT);
 	*/
+	/*
 napi_property_descriptor desc[2] = {
 	{"callEmit",0, callEmit, 0, 0, 0, napi_default, 0},
 	{"create_async",0,create_async, 0, 0, 0, napi_default, 0}
 };
 	napi_define_properties(env, exports, sizeof(desc)/sizeof(*desc), desc);
+	*/
+	
+	napi_status status;
+	napi_value fn,fn1;
+	status=napi_create_function(env,NULL,0,callEmit,NULL,&fn);
+	if(status !=napi_ok){printf("create func callEmit fail.\n");return NULL;}
+	status=napi_set_named_property(env,exports,"callEmit",fn);
+	if(status !=napi_ok){printf("set prop callEmit fail.\n");return NULL;}
+	status=napi_create_function(env,NULL,0,create_async,NULL,&fn1);
+	if(status !=napi_ok){printf("create func create_async fail.\n");return NULL;}
+	status=napi_set_named_property(env,exports,"create_async",fn1);
+	if(status !=napi_ok){printf("set prop create_async fail.\n");return NULL;}
+	
+	
 	return exports;
 }
 NAPI_MODULE(addon,Init)
