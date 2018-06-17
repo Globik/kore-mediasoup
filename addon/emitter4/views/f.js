@@ -14,6 +14,7 @@ const f=n=>{
 		<button onclick="go_attach();">attach</button>
 	| <button onclick="go_detach();">detach</button>
 	| <button onclick="go_destroy();">destroy</button><br>
+<button onclick="ping();">ping</button>
 	<hr>
 	<br>
 	<button onclick="create_channel();">create datachannel</button>

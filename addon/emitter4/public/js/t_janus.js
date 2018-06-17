@@ -15,14 +15,7 @@ var inputtextbox = document.getElementById("inputtext");
 function gid(i){return document.getElementById(i);}
 var f=gid("f");
 var interv;
-function j_ping(){
-var d={};
-	console.log('ping');
-	d.janus="keepalive";
-	d.session_id=session_id;
-	d.transaction=transaction;
-	if(socket)socket.send(JSON.stringify(d));
-}
+
 function onmessage(msg) {
 mout.innerHTML+="<b>msg: </b>"+msg+"<br>";
 console.log('length: ',msg.length);
@@ -68,24 +61,7 @@ if(m.janus){
 	spansessid.textContent=session_id;
 	spantransact.textContent=transaction;
 		
-	interv=setInterval(function(){
-	//console.log('ping');
-		// As I understood keep alive should be used on the server side, not here, not from the user endpoint
-		// also attach one plugin event should be on the server side, at nodejs run time
-		// yeah it is cool as a demo and proof of concept - attach a plugin right from here,
-		// but not the case for a production mode
-		// also as answer for "keepalive" is better to have the value as "ping" or "pong" but not the "ack"
-		// I don't wont to send from nodejs server the "ack" for "keepalive" it mixes up the whole logic
-		// and it's very complicated to filter those "acks" without knowing what this if it success for trickle
-		// or it is answer for keepalive request, very shit
-		// I could on frontend side to visualize the progress of trickle requests, but ack for keepalive mixes the logic
-		// for visualization effects, very shit
-		var d={};
-	d.janus="keepalive";
-	d.session_id=session_id;
-	d.transaction=transaction;
-	if(socket)socket.send(JSON.stringify(d)); 
-					   },1000*6);
+	
 	}
 }
 }
@@ -96,6 +72,7 @@ socket = new WebSocket("ws://localhost:3000");
 socket.onopen = function(evt) { mout.innerHTML+= "<b>websocket opened</b><br>";};
 socket.onclose = function(evt) { 
 if(interv)clearInterval(interv);
+socket=null;
 mout.innerHTML+="<b>websocket closed</b><br>"; 
 };
 socket.onmessage = function(evt) { onmessage(evt.data) };
@@ -104,9 +81,9 @@ socket.onerror = function(evt) { mout.innerHTML+="<b>onerror:</b>"+evt+"<br>"; }
 function send_message(){
 if(!f.value)return;
 var ob={};
-	ob.msg=f.value;
-	ob.type="message";
-	ob.session_id=session_id;
+ob.msg=f.value;
+ob.type="message";
+ob.session_id=session_id;
 ob.handle_id=handle_id;
 ob.transaction=transaction;
 	
@@ -157,6 +134,12 @@ d.transaction=transaction;
 if(socket)socket.send(JSON.stringify(d));
 //{ "janus": "success", "transaction": "transaction_string", "data": { "id": 777363624503552 } }
 //janus:ev,sender:plug.handleid,plugindata:plugin:name,data:echotest:ev,result:ok
+}
+function ping(){
+var d={};
+	d.janus="ping";
+	d.transaction=transaction;
+	if(socket)socket.send(JSON.stringify(d));
 }
 function create_channel(){
 pc=new RTCPeerConnection(cf);
