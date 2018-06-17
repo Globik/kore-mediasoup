@@ -32,11 +32,11 @@ w.psend(psess_data);
 w.on('erroro',e=>console.log('ERRORO: ',e)) // custom error logic - basic concept
 w.on("keepalive_ready",function(s){
 console.log("ON_KEEP_ALIVE READY: ", s);
-	intervalik=setInterval(function(){
+	intervalik=setInterval(function dint(){
 	w.psend(JSON.stringify(intervaljson));
-	},1000)
+	},intsec);
 })
-w.on('message', msg=>{
+w.on('message', function do_m(msg){
 console.log('msg came from seq_sock_server Janus webrtc app1: ',msg);
 var send_to_client=true;
 let r;
@@ -84,13 +84,19 @@ console.log("websock client opened!");
 function on_janus_msg(m){
 console.log('***on_janus_msg*** ');
 console.log('ws.readyState: ',ws.readyState);//should be opened.
-if(ws.readyState==1)ws.send(m);
+let ml;
+try{ml=JSON.parse(m);if(ml.janus)ml.type="janus";}catch(e){console.log(e);return;}
+if(ws.readyState==1)if(ml)ws.send(JSON.stringify(ml));
 }
+
 ev.on('from_janus', on_janus_msg);
-	var d={};
-	d.type="type";
-	d.msg="Hi from server!";
+let d={};
+d.type="hello_user";
+d.msg="Hi from server!";
+d.transaction=intervaljson.transaction;
+d.session_id=intervaljson.session_id;
 ws.send(JSON.stringify(d));
+	
 ws.on('message',function websock_msg(msg){
 console.log("msg came from frontend: ", msg);
 //send message to janus webRTC gateway

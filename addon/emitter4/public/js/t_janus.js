@@ -1,5 +1,5 @@
 var socket = null;
-var transaction="user_77f";
+var transaction='';
 var session_id=0,handle_id=0,pc=null;
 var plugin="janus.plugin.echotest";
 var usid=0;
@@ -53,16 +53,28 @@ pc.setRemoteDescription(ax, onSetRemoteDescriptionDone, onError);
 }
 }
 	*/
-if(m.janus){
-	if(m.janus=="success"){
-	console.log(m.janus);
-	transaction=m.transaction;
-	session_id=m.data.id;
-	spansessid.textContent=session_id;
-	spantransact.textContent=transaction;
-		
+	//success_attach
+if(m.type=="janus"){
+if(m.janus=="success_attach"){
+handle_id=m.data.id;
+spanhandleid.textContent=handle_id;
+//m.session_id,m.transaction
+}else if(m.janus=="success"){
+
+}else if(m.janus=="event"){
+if(m.jsep && m.jsep.type=="answer"){
+var ax = new RTCSessionDescription({ type: "answer", sdp: m.jsep.sdp });
+pc.setRemoteDescription(ax, onSetRemoteDescriptionDone, onError);
+}
+}else{}
 	
-	}
+}else if(m.type=="hello_user"){
+transaction=m.transaction;
+session_id=m.session_id;
+spansessid.textContent=session_id;
+spantransact.textContent=transaction;
+}else{
+
 }
 }
 
@@ -113,19 +125,22 @@ if(socket)socket.send(JSON.stringify(ob));
 }
 function go_detach(){
 var ob={};
-ob.type="detach";
+ob.janus="detach";
+ob.type="janus";
 ob.session_id=session_id;
 ob.handle_id=handle_id;
 ob.transaction=transaction;
 if(socket)socket.send(JSON.stringify(ob));
 }
 function go_destroy(){
+	/*
 		var ob={};
 			ob.type="destroy";
 			ob.session_id=session_id;
 			ob.handle_id=handle_id;
 			ob.transaction=transaction;
 			if(socket)socket.send(JSON.stringify(ob));
+			*/
 		}
 function create_session(){
 var d={};
@@ -164,16 +179,21 @@ function handle_cand(c){
 	}
 	
 function onIceCandidate(e){
+	
 if (e.candidate) {
 var ob={};
-ob.type="trickle";
+
+ob.type="janus";
+ob.janus="trickle";
+
 ob.candidate=e.candidate;
 ob.session_id=session_id;
 ob.handle_id=handle_id;
+
 ob.transaction=transaction;
 	try{
 	var obi=JSON.stringify(ob);
-	if(socket) socket.send(obi); else msg("socket is down.");
+	if(socket) socket.send(obi);
 	}catch(e){msg(e);}
 }
 
@@ -198,14 +218,20 @@ msg("ON OFFER DONE");
 msg("currentoffer: "+currentoffer);
 currentoffer = offer;
 msg("<b>currentoffer_2: </b>"+JSON.stringify(currentoffer));
-msg("<b>OFFER SDP:</b> "+offer.sdp);
+//msg("<b>OFFER SDP:</b> "+offer.sdp);
 var data={};
 data.type="janus";
-data.jsep=offer;
+data.janus="message";
+	//offer.trickle=false;
+data.jsep={};
+	data.jsep.sdp=offer.sdp;
+	data.jsep.type=offer.type;
+//data.jsep.trickle=false;
 data.session_id=session_id;
 data.handle_id=handle_id;
 data.transaction=transaction;
-data.body={what:"some_body_must_be"};
+data.body={audio:false,video:false,data:true,trickle:false};
+
 try{
 var bjson=JSON.stringify(data);
 msg(bjson);
@@ -229,3 +255,21 @@ dc.onmessage = function (event) { msg("Remote: " + event.data); }
 function onError(e) { if(e.message){ alert("onError: " + e.message);} else{ alert(e);}}
 function debug(m) {  console.log(m);  }
 function msg(m) { outputtextbox.innerHTML += (m + "<br />"); }
+/*
+"janus": "event",
+   "session_id": 3339039474184731,
+   "sender": 4249572172194807,
+   "transaction": "trans_act_str",
+   "plugindata": {
+      "plugin": "janus.plugin.echotest",
+      "data": {
+         "echotest": "event",
+         "result": "ok"
+      }
+   },
+   "jsep": {
+      "type": "answer",
+      "sdp": "v=0\r\no=- 1438594046166573988 2 IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\na=group:BUNDLE data\r\na=msid-semantic: WMS janus\r\nm=application 9 DTLS/SCTP 5000\r\nc=IN IP4 127.0.0.1\r\na=sendrecv\r\na=sctpmap:5000 webrtc-datachannel 16\r\na=mid:data\r\na=ice-ufrag:Otcv\r\na=ice-pwd:FCe5HvLHoq+1/c+mqJa3yn\r\na=ice-options:trickle\r\na=fingerprint:sha-256 D2:B9:31:8F:DF:24:D8:0E:ED:D2:EF:25:9E:AF:6F:B8:34:AE:53:9C:E6:F3:8F:F2:64:15:FA:E8:7F:53:2D:38\r\na=setup:active\r\na=end-of-candidates\r\n"
+   }
+}
+*/

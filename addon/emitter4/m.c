@@ -128,28 +128,23 @@ return 0;
 static int write_start(char*s, size_t leni){
 //printf("IS READ true\n");
 if(!is_read){printf("write start is_read false\n");}else{printf("is read true\n");}
-	printf("before stop sockout\n");
-
-	uv_poll_stop(&sockout_watcher);
-
-	printf("after stop sockout\n");
+	//printf("before stop sockout\n");
+uv_poll_stop(&sockout_watcher);
+//printf("after stop sockout\n");
 is_read=false;
 printf(green "read_start leni:: %d\n" rst, leni);
-//char*s="FUCKER HERE.";
+//char*s="str HERE.";
 sockin_watcher.data=NULL;
 sockin_watcher.data=strdup(s);
-	
 uv_poll_start(&sockin_watcher, UV_WRITABLE, on_sock_write);
-	printf("after poll start sockin\n");
+//printf("after poll start sockin\n");
 return 0;
 }
 
 static void on_sock_read(uv_poll_t*watcher,int status,int revents){
 size_t bs=512*6;
 char buffer[bs];
-fucker++;
-//printf("fucker: %d",fucker);
-printf("revents: %d, status: %d\n",revents,status);
+printf(green "on_sock_read: revents: %d, status: %d\n" rst,revents,status);
 if(status !=0){printf(red "status: %d\n" rst,status);return;}
 
 if(revents == UV_READABLE){
@@ -160,64 +155,17 @@ perror("read");
 fprintf(stderr,red "read error occured in sock_read. %d\n" rst, ret);
 return;
 }
-	if(ret==0){
-		// for the first time in my life I got to know that ret==0 actually means that remote server socket closed connection
-		// masafak , all day could not  figure out what's wrong is here
-		// CLOSED!!! 
-		// this fucking trigger triggers all the time without a pause
-		// no chance to reconnect to server, as shows all the way that ret == 0, masafaka untile shut up nodejs server 
-		// even if you explicitly close the fucking poll, - no chance to reconnect
-	on_msg_cb("something wrong");
-	printf(red "ret is NULLLL****\n" rst);
-		//break;
-		//return;	  
-		uv_poll_stop(&sockout_watcher);
-		//revents |=UV_READABLE;
-		printf(red "after 33\n" rst);
-		//is_fuck=true;
-		//uv_close((uv_handle_t*)&sockout_watcher,on_clo);
-		//is_read=false;
-		//uv_poll_init(loop,
-	//uv_poll_init(loop, &sockout_watcher, data_socket);
-	//uv_poll_start(&sockout_watcher,UV_READABLE,on_sock_read);
-		//uv_poll_start(&sockin_watcher,UV_WRITABLE,on_sock_write);
-			  return;
-			  }
-buffer[ret]=0;
-//fprintf(stderr,"result => %s\n",buffer);
-	on_msg_cb(buffer);
-	memset(buffer,0,bs);
-	//uv_poll_stop(&sockout_watcher);
-	//is_fuck=false;
-	
-}else if((revents == UV_DISCONNECT) || revents==5){
-	//cleanup
-	
-printf(red "in uv disconnect event and 5\n" rst);
-	/*
-	int	ret=read(data_socket,buffer,bs);
-if(ret==-1){
-perror("read");
-fprintf(stderr,red "read error occured in sock_read. %d\n" rst, ret);
+if(ret==0){
+on_msg_cb("{\"err\":\"connection closed\",\"type\":\"sqpacksock_error\",\"event\":\"closed\"}");
+printf(red "ret is NULL****\n" rst);
+uvpoll_cleanup();
 return;
 }
-	printf(red "ret buf : %d\n" rst,ret);
-	buffer[ret]=0;
-fprintf(stderr,"result => %s\n",buffer);
-uv_poll_stop(&sockout_watcher);
-//uv_poll_start(&
-				  uv_poll_start(&sockout_watcher, UV_READABLE | UV_DISCONNECT, on_sock_read);
-				  */
-//uvpoll_cleanup();
-}else{
-fprintf(stderr,red "unknown event in sock_read.\n" rst);
+buffer[ret]=0;
+//fprintf(stderr,"result => %s\n",buffer);
+on_msg_cb(buffer);
+memset(buffer,0,bs);
 }
-	printf("before stop read in on_read\n");
-//uv_poll_stop(&sockout_watcher);
-	printf("after stop read in on read\n");
-//uv_poll_start(&sockin_watcher, UV_WRITABLE /*| UV_DISCONNECT*/, on_sock_write);
-	printf("after start write in on_read\n");
-//is_read=false;
 }
 
 int buka=0;
@@ -228,15 +176,16 @@ buka++;
 if(status !=0){
 if(watcher->data !=NULL)free(watcher->data);
 watcher->data=NULL;
-printf(red "fucking status: %d\n" rst,status);
+printf(red "on_sock_write: status: %d\n" rst,status);
 return;
 }
 
 //printf("BUKA write_sock: %d\n", buka);
-printf("write_sock: MEVENTS: %d STATUS: %d\n",mevents,status);
+printf(green "on_sock_write: MEVENTS: %d STATUS: %d\n" rst, mevents, status);
 if(mevents == UV_WRITABLE){
 //fprintf(stderr, "Uv writable\n");
-char buf[512];
+	size_t bs=512*6;
+char buf[bs];
 //strcpy(buf,"Hallo world!");
 if(watcher->data !=NULL){
 char*s=watcher->data;
@@ -245,7 +194,7 @@ strcpy(buf,s);
 free(s);
 watcher->data=NULL;
 int leni=strlen(buf);
-ret=send(data_socket,buf, leni, 0);
+ret=send(data_socket, buf, leni, 0);
 		
 if(ret==-1){
 printf(red "ret:: %d\n" rst,ret);
@@ -253,10 +202,10 @@ perror("write2");
 }
 //printf("leni: %d, ret: %d\n",leni,ret);
 }
-memset(buf,0,512);
+memset(buf,0, bs);
 }
 uv_poll_stop(&sockin_watcher);
-uv_poll_start(&sockout_watcher, UV_READABLE /*| UV_DISCONNECT*/, on_sock_read);
+uv_poll_start(&sockout_watcher, UV_READABLE, on_sock_read);
 is_read=true;
 pfucker();
 }

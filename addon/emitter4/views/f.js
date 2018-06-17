@@ -3,7 +3,7 @@ const f=n=>{
 <html><head><title>Echo datachannel</title></head><body>
 	<div id="divtransact"><b>TRANSACTION:</b>&nbsp;<span id="spantransact">0</span></div>
 	<div id="divsessid"><b>SESSION_ID:</b>&nbsp;<span id="spansessid">0</span></div>
-	<div><b>HANDLE_ID:&nbsp;</b><span id="spanhanleid">0</span></div>
+	<div><b>HANDLE_ID:&nbsp;</b><span id="spanhandleid">0</span></div>
 	<h4>Connenct websocket.</h4>
 	<b>Do connect!: </b><button onclick="connect();">connect</button> | <button onclick="disconnect();">disconnect</button><br>
 	<b>your id: </b><span id="yrid"></span><br>
@@ -22,7 +22,8 @@ const f=n=>{
 <output id="mout"></output>
 <span id="outputtext"></span>
 <hr>
+<div style="background:green;"><h2>data</h2>
 <textarea id="inputtext" style="width:100%" onkeypress="onUserKeyPressEvent(event)"></textarea> 
-
+</div>
 <script src="/js/t_janus.js"></script></body></html>`;}
 module.exports={f}
