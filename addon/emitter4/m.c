@@ -184,6 +184,7 @@ return;
 printf(green "on_sock_write: MEVENTS: %d STATUS: %d\n" rst, mevents, status);
 if(mevents == UV_WRITABLE){
 //fprintf(stderr, "Uv writable\n");
+	//TODO check buffer overflow
 	size_t bs=512*6;
 char buf[bs];
 //strcpy(buf,"Hallo world!");
