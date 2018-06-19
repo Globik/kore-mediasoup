@@ -318,16 +318,17 @@ k=napi_close_handle_scope(shenv,scope);
 if(k !=napi_ok){printf(red "close_scope pfucker() is NOT ok!\n" rst);}
 return NULL;
 }
+//to node.js a message send
 napi_value on_msg_cb(char*msg_str){
 napi_status k;
 if(msgEnv == NULL){printf(red "msgEnv is NULL.\n" rst); return NULL;}
 napi_value cbu;
 napi_handle_scope scope;
-napi_open_handle_scope(shenv,&scope);
+napi_open_handle_scope(msgEnv,&scope);
 napi_value argv[1];
 const char * str = msg_str;//"now_readable";
 size_t str_len = strlen(str);
-k=napi_create_string_utf8(shenv, str, str_len, argv);
+k=napi_create_string_utf8(msgEnv, str, str_len, argv);
 if(k !=napi_ok){printf(red "cr_str1 in on_msg_cb is NOT ok!\n" rst);
 			//return NULL;
 			   }
@@ -336,7 +337,7 @@ if(k !=napi_ok){printf(red "get_ref in on_msg_cb is NOT ok!\n" rst);
 			//return NULL;
 			   }
 napi_value global;
-k=napi_get_global(shenv,&global);
+k=napi_get_global(msgEnv,&global);
 if(k !=napi_ok){printf(red "get_glob in on_msg_cb is NOT ok!\n" rst);
 				//return NULL;
 			   }
@@ -345,14 +346,38 @@ k=napi_call_function(msgEnv, global, cbu, 2, argv, NULL);
 if(k !=napi_ok){printf(red "call_func in on_msg_cb is NOT ok!\n" rst);
 //return NULL;
 }
-k=napi_close_handle_scope(shenv,scope);
+k=napi_close_handle_scope(msgEnv,scope);
 if(k !=napi_ok){printf(red "close_scope is not ok\n" rst);}
 return NULL;
 }
 napi_value p_close(napi_env env, napi_callback_info info)
 {
 if(uv_poll_init_success==0)return NULL;
-napi_status k;
+napi_status k;status=napi_create_function(env,NULL,0,p_send,NULL,&fn1);
+	if(status !=napi_ok){printf(red "create func p_send failed.\n" rst);return NULL;}
+	status=napi_set_named_property(env,exports,"p_send",fn1);
+	if(status !=napi_ok){printf(red "set prop p_send failed.\n" rst);return NULL;}status=napi_create_function(env,NULL,0,p_send,NULL,&fn1);
+	if(status !=napi_ok){printf(red "create func p_send failed.\n" rst);return NULL;}
+	status=napi_set_named_property(env,exports,"p_send",fn1);
+	if(status !=napi_ok){printf(red "set prop p_send failed.\n" rst);return NULL;}status=napi_create_function(env,NULL,0,p_send,NULL,&fn1);
+	if(status !=napi_ok){printf(red "create func p_send failed.\n" rst);return NULL;}
+	status=napi_set_named_property(env,exports,"p_send",fn1);
+	if(status !=napi_ok){printf(red "set prop p_send failed.\n" rst);return NULL;}status=napi_create_function(env,NULL,0,p_send,NULL,&fn1);
+	if(status !=napi_ok){printf(red "create func p_send failed.\n" rst);return NULL;}
+	status=napi_set_named_property(env,exports,"p_send",fn1);
+	if(status !=napi_ok){printf(red "set prop p_send failed.\n" rst);return NULL;}status=napi_create_function(env,NULL,0,p_send,NULL,&fn1);
+	if(status !=napi_ok){printf(red "create func p_send failed.\n" rst);return NULL;}
+	status=napi_set_named_property(env,exports,"p_send",fn1);
+	if(status !=napi_ok){printf(red "set prop p_send failed.\n" rst);return NULL;}status=napi_create_function(env,NULL,0,p_send,NULL,&fn1);
+	if(status !=napi_ok){printf(red "create func p_send failed.\n" rst);return NULL;}
+	status=napi_set_named_property(env,exports,"p_send",fn1);
+	if(status !=napi_ok){printf(red "set prop p_send failed.\n" rst);return NULL;}status=napi_create_function(env,NULL,0,p_send,NULL,&fn1);
+	if(status !=napi_ok){printf(red "create func p_send failed.\n" rst);return NULL;}
+	status=napi_set_named_property(env,exports,"p_send",fn1);
+	if(status !=napi_ok){printf(red "set prop p_send failed.\n" rst);return NULL;}status=napi_create_function(env,NULL,0,p_send,NULL,&fn1);
+	if(status !=napi_ok){printf(red "create func p_send failed.\n" rst);return NULL;}
+	status=napi_set_named_property(env,exports,"p_send",fn1);
+	if(status !=napi_ok){printf(red "set prop p_send failed.\n" rst);return NULL;}
 size_t argc = 2;
 napi_value args[2];
 napi_get_cb_info(env, info, &argc, args, NULL, NULL);
@@ -395,6 +420,7 @@ return NULL;
 }
 return NULL;
 }
+
 napi_value on_ready(napi_env env,napi_callback_info info){
 if(uv_poll_init_success==0)return NULL;
 napi_status k;
@@ -464,7 +490,7 @@ muka=input;
 printf(red "IS NOT A BUFFER\n" rst);
 return NULL;
 }
-len=0;
+//len=0;
 /*	
 napi_valuetype val0;
 napi_typeof(env, args[1], &val0);
@@ -504,7 +530,6 @@ napi_value cb = args[1];//args[0] is an input buffer, args[1] is output -> callb
 k = napi_call_function(env, global, cb, 2, argv, NULL);
 if(k != napi_ok){
 printf(red "call_func in p_send is NOT ok!\n" rst);
-return NULL;
 }
 //k=napi_close_handle_scope(env,scope);
 //if(k==napi_ok){printf("close_scope is ok\n");}else{printf("close_scope is not ok\n");}
