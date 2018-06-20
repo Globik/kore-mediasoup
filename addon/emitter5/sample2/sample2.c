@@ -24,7 +24,8 @@
 #define red "\x1b[31m"
 #define rst "\x1b[0m"
 #define SHLIB_EXT ".so"
-
+int suka=0;
+uv_sem_t sem_g;
 static uv_async_t async_g;
 int gloop_init_success=0;
 static GMainContext *sess_watchdog_ctx=NULL;
@@ -89,6 +90,7 @@ if(!plugin){ printf(red "[sample1.c]: plugin is -1\n" rst);return -1;}
 printf(green "[sample1.c]: The message came from echo plugin: %s\n" rst,transaction); 
 //on_msg_cb(transaction);
 const char*t=transaction;
+	// TODO place uv_async_send in a queue, sorry to say uv_callback.c library doesn't work without uv loop in other thread
 	async_g.data=(void*)t;
 	uv_async_send(&async_g);
 return 0;
@@ -101,6 +103,7 @@ void j_handle_signal(int signum) {
 	switch(g_atomic_int_get(&stop)) {
 		case 0:
 			g_print("\n[sample1.c]: Stopping gateway, please wait...\n");
+			suka=1;
 			
 			break;
 		case 1:
@@ -112,7 +115,12 @@ void j_handle_signal(int signum) {
 	}
 	
 	g_atomic_int_inc(&stop);
+	suka=1;
+	//g_main_context_wakeup(sess_watchdog_ctx);
+	suka=1;
+	uv_sem_post(&sem_g);
 	if(g_atomic_int_get(&stop) > 2) {
+		//g_main_context_wakeup(sess_watchdog_ctx);
 		g_print("[sample1.c]: Here must be exit(0).\n");
 		exit(0);
 	}
@@ -219,14 +227,23 @@ emexit();
 	
 	
 	closedir(dir);
-	
+	printf("we here 222\n");
 
 while(!g_atomic_int_get(&stop)){
 	// it's strange here. Heat cpu? wasted resources?? Busy looping all the time
 	// check if sys/signal fd OK for that or semaphor??? coroutine???
-usleep(25000);
-//printf("loop\n");
+	printf("loop_\n");
+	
+	uv_sem_wait(&sem_g);
+	//with semaphore it seems to work as expected, hm.
+	// And why Lorenzo doesn't use g_main_context_iteration? I'v tried it - sigint doesn't work at this scenario
+	//g_main_context_iteration(sess_watchdog_ctx,TRUE);
+	//g_main_context_wakeup(sess_watchdog_ctx);
+//usleep(25000);
+printf("loop\n");
 }
+	
+	//g_main_context_wakeup(sess_watchdog_ctx);
 	
 
 g_print(green "[sample1.c]: Ending watchdog loop.\n" rst);
@@ -266,10 +283,20 @@ static bool watcher_started=false;
 	int err;
 	uv_loop_t * loop=NULL;
 	napi_get_uv_event_loop(envi,&loop);
+	
+	err=uv_sem_init(&sem_g,1);
+	if(err<0){
+	return -err;
+	}
+	
+	
 	err=uv_async_init(loop, &async_g, print_to);
-	if(err<0) return -err;
+	if(err<0) {
+	uv_sem_destroy(&sem_g);	
+	return -err;}
 	err=pthread_create(&thread_id,0,watcher,0);
 	if(err !=0){
+	uv_sem_destroy(&sem_g);
 	uv_close((uv_handle_t*)&async_g,0);
 	return err;
 	}
@@ -482,6 +509,7 @@ napi_status k=napi_delete_reference(msgEnv, msgCb);
 if(k==napi_ok){ printf("[sample1.c]: del_ref msgCb is OK.\n");}else{printf(red "[sample1.c]: del_ref msgCb is NOT OK.\n" rst);}
 msgEnv=NULL;	
 }
+	uv_sem_destroy(&sem_g);	
 }
 
 napi_value Init(napi_env env, napi_value exports)

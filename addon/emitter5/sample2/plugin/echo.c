@@ -98,6 +98,7 @@ j_message *msg=NULL;
 		//plugin_message_free(msg); ???
 		
 	}
+	//g_main_context_wakeup(sess_watchdog_ctx);
 	plugin_message_free(msg);
 	g_print("[echo.c]: Leaving echo plugin!\n");
 	return NULL;

@@ -28,7 +28,8 @@ void j_handle_signal(int signum) {
 }
 */
 static gboolean j_check_sess(gpointer user_data){
-	//printf("tick-tack\n");
+	printf("tick-tack\n");
+	//g_main_context_wakeup(NULL);
 return G_SOURCE_CONTINUE;
 }
 
@@ -39,7 +40,9 @@ GMainLoop *loop=(GMainLoop *)user_data;
 	g_source_set_callback(timeout_source,j_check_sess,watchdog_ctx,NULL);
 	g_source_attach(timeout_source,watchdog_ctx);
 	g_source_unref(timeout_source);
+	//g_main_context_wakeup(watchdog_ctx);
 	printf("[helper.c]: Session watchdog started!\n");
 	g_main_loop_run(loop);
+	//g_main_context_wakeup(watchdog_ctx);
 	return NULL;
 }
