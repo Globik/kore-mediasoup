@@ -57,3 +57,13 @@
 2. app.js - an app based on Koa.js(framework), websocket. Just to test it via the browser.
 
 No package.json provided, sorry.
+
+21.06.2018.
+
+I must stop here. Janus WebRTC gateway changes his code every day. 
+Leave it here for the future standalone project - a "CMS" for a website that
+restreams Videos from 5 - 6 IP-cameras to the internet public. Not to cloud.
+With node.js it is a simple and good start for prototyping a commecrcial project based on Janus 
+with his own custom events and plugins, requests to the Database, design and buisness logic.
+In his turn those site can be translated into the other webframework written in C. For perfomance reasons...
+So far this is not my priority for the time being. 
