@@ -21,7 +21,7 @@ return Promise.resolve()
 		.catch(function(e){console.log(e)})
 		promises.push(p)
 	}
-	return Promise.all(promises)
+	return Promise.all(promises) 
 	})	
 }
 function createOffer(){
