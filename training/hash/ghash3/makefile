@@ -15,3 +15,5 @@ ec: ec.c
 	gcc $(EMIT) $(LISTI) -o ec ec.c -lee
 ec2: ec2.c
 	gcc $(EMIT) $(LISTI) -o ec2 ec2.c -lee `pkg-config --libs lwan`
+ec3: ec3.c
+	gcc $(EMIT) $(LISTI) -o ec3 ec3.c -lee 

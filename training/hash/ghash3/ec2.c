@@ -81,6 +81,8 @@ void suki(void*d){
 	//ee_on(bali,"freund",void m(d
 	}
 int func(struct coro*coro,void*data){
+	
+	
 	struct fig *f=(struct fig*)data;
 	int b=f->b;
 printf("within coro func, data: %d \n",b);
@@ -93,6 +95,8 @@ f->b=505;
 
 coro_defer(coro,suki,as);
 coro_yield(coro,1);
+
+ 
 coro_yield(coro,0);
 __builtin_unreachable();	
 	}
