@@ -19,9 +19,14 @@ typedef int(*on_create_something)(struct server*,int,on_funny);
 
 
 struct channel{
+ee_t*ee;
 on_channel_send request;
 on_notify notify;
 };
+struct responsi{
+	struct channel*ch;
+	void*data;
+	};
 struct server{
 	ee_t*ee;
 	struct channel*ch;
@@ -32,7 +37,8 @@ struct server{
 	
 };
 on_req_cb dummy_result=NULL;
-
+const char*erst_data="erst_data";
+const char*zweite_data="zweite_data";
 void notifier(char * a){
 printf("notifier(), data came: %s\n",a);
 //on_fun("a");	
@@ -42,12 +48,32 @@ int on_funi(){
 printf("on_fun()\n");
 return 0;
 }
-void invoke_for_dummy(struct channel*ch){
-if(dummy_result)
-dummy_result(ch,"room created");
+void on_erst_data(void*data){
+	printf("on_erst_data\n");
+	struct responsi *resp=(struct responsi*)data;
+	printf("here data: %s\n",(char*)resp->data);
+	// accepted, rejected, targetId
+//if (accepted)
+	ee_emit(resp->ch->ee, zweite_data, "accepted with data");//or empty data or rejected or targetid
+}
+
+void on_zweite_data(void*data){
+printf("on_zweite_data: %s\n",(char*)data);
+//here create a room instance
+on_funi();//??
 	
+}
+void invoke_for_dummy(struct channel*ch){
+//if(dummy_result)
+//dummy_result(ch,"room created");
+struct responsi resp;
+resp.ch=ch;
+resp.data="room_created";
+ee_emit(ch->ee, erst_data, (void*)&resp);
 // the same as on_req_cb req_cb; need to store in some hash table
 // for later use in response from a thread
+
+
 }
 void req_cb(struct channel*s, char*str){
 printf("req_cb()\n");	
@@ -59,6 +85,7 @@ void channel_send(struct channel*ch, char*str, on_req_cb req_cb){
 printf("channel_send occured\n");
 // need a new Map() as in js	
 dummy_result = req_cb;
+ee_once(ch->ee, erst_data, on_erst_data);
 invoke_for_dummy(ch);
 }
 
@@ -71,8 +98,9 @@ void on_close_cb(void*);
 void closi(struct server*);
 
 
-int create_somethingi(struct server*server,int a, on_funny on_funi){
+int create_somethingi(struct server * server, int a, on_funny on_funi){
 printf("in create_somethingi()\n");
+ee_once(server->ch->ee, zweite_data, on_zweite_data);//on accepted with data if any, rejected
 server->ch->request(server->ch,"create_room", req_cb);
 return 0;
 }
@@ -90,9 +118,10 @@ if(server==NULL){
 ee_destroy(ee);
 return 0;
 }
-ee_on(server->ee,"close", on_close_cb);
 
-server->create_something(server,101,on_funi);
+ee_on(server->ee, "close", on_close_cb);
+
+server->create_something(server,101, on_funi);
 
 server->close(server);
 free(ch);
@@ -120,6 +149,7 @@ obj=/*(struct server*)*/malloc(sizeof(struct server));
 if(obj==NULL)return NULL;
 obj->ee=ee;
 obj->ch=ch;
+ch->ee=obj->ee;
 obj->emit=emiti;
 obj->close=closi;
 obj->create_something=create_somethingi;
@@ -133,6 +163,7 @@ struct channel*channel_new(){
 struct channel*ch=NULL;
 ch=/*(struct channel*)*/malloc(sizeof(struct channel));
 if(ch==NULL)return NULL;
+ch->ee=NULL;
 ch->request=channel_send;
 ch->notify=notifier;
 return ch;	
