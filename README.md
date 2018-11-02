@@ -7,6 +7,8 @@ Based on [Version 1.2.8](https://github.com/versatica/mediasoup/tree/1.2.8)
 
 I just want to get it work from within a [kore](https://github.com/jorisvink/kore)  web framework(written in C) in a dedicated thread.
 
+Just like here [https://github.com/Globik/kore.io_websocket/tree/master/mediasoup_1](https://github.com/Globik/kore.io_websocket/tree/master/mediasoup_1)
+
 As such I wanna port the mediasoup's [javascript API](https://github.com/versatica/mediasoup/tree/1.2.8/lib) to the C part.
 
 ## Work in progress:
