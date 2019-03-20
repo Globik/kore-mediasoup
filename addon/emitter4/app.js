@@ -29,8 +29,9 @@ app.use(koaBody());
 pub_router.get('/',async ctx=>{
 ctx.body=await ctx.render('seqpacket',{})
 })
-pub_router.post('/testEvent', async (ctx)=>{
-console.log("event_body", JSON.stringify(ctx.request.body));
+pub_router.post('/testEvent', async function food(ctx){
+	console.log(this.name);
+console.log("event_body", __filename,'\n', JSON.stringify(ctx.request.body));
 ctx.body={info:"ok"}	
 })
 app.use(pub_router.routes()).use(pub_router.allowedMethods())
