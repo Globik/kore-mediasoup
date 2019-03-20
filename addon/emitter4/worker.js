@@ -75,7 +75,7 @@ let i=0;
 console.log("ON_MESSSSSSSSSSSSSSSSSSAGA");
 this.on_msg(msg=>{
 i++;
-//console.log("messaga came",msg);
+console.log("messaga came",msg);
 //if(i>1)
 this.emit('message', msg);
 });

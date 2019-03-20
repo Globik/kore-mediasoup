@@ -3,6 +3,7 @@
 const Koa=require('koa');
 const PORT=3000;
 const WebSocket=require('/home/globik/alikon/node_modules/ws');// see npm ws.js
+const koaBody=require('koa-body');
 const render=require('koa-rend'); // npm koa-rend.js
 const Router=require('koa-router'); // npm koa-router.js
 const serve=require('koa-static');
@@ -27,7 +28,7 @@ psess_ob.transaction=transi;
 var psess_data=JSON.stringify(psess_ob);
 w.on('connect',function conni(v){
 console.log("CONNECT",v);
-w.psend(psess_data);
+//w.psend(psess_data);
 });
 w.on('erroro',e=>console.log('ERRORO: ',e)) // custom error logic - basic concept
 w.on("keepalive_ready",function(s){
@@ -41,8 +42,12 @@ console.log('msg came from seq_sock_server Janus webrtc app1: ',msg);
 var send_to_client=true;
 let r;
 try{
+console.log("Not json: ", r);
 r=JSON.parse(msg);
-}catch(er){console.log('json err: ',er);}
+}catch(er){
+//console.log('json err: ',er);
+return;
+}
 if(r && r.janus){
 if(r.janus=="success_create"){
 intervaljson.transaction=r.transaction;
@@ -61,9 +66,15 @@ w.create_client(unix_sock_path) // it's a need, without it I dunno how to call t
 app.use(serve(__dirname+'/public'));
 render(app,{root:'views', development:true});//development==true is a need for the hot reloader/watcher, 
 //as template string literals are always in cash/memory
+app.use(koaBody());
 pub_router.get('/',async ctx=>{
 console.log('frontend');
 ctx.body=await ctx.render('f',{}) // from views folder, "f.js" file - quick and dirty solution to render some html stuff on server side
+})
+pub_router.post('/testEvent', async ctx=>{
+//ordnung wichig: 'koa-body' first, then before router app.use(koaBody())
+console.log("body: ",ctx.request.body);
+ctx.body={info: "ok"};
 })
 app.use(pub_router.routes()).use(pub_router.allowedMethods())
 app.on('error',(err,ctx)=>{console.log(err.message,ctx.request.url)})
@@ -96,11 +107,22 @@ d.msg="Hi from server!";
 d.transaction=intervaljson.transaction;
 d.session_id=intervaljson.session_id;
 ws.send(JSON.stringify(d));
-	
+// sudo leafpad /usr/local/etc/janus/janus.eventhandler.sampleevh.cfg
 ws.on('message',function websock_msg(msg){
 console.log("msg came from frontend: ", msg);
+let l;
+var send_to_clients=0;
+try{
+l=JSON.parse(msg);	
+}catch(e){return;}
+if(l.type=="connect"){
+	w.create_client(unix_sock_path)
+}
 //send message to janus webRTC gateway
-w.psend(msg);
+//w.psend(msg);
+if(send_to_clients==0){
+ws.send(msg);	
+}
 })
 ws.on('close',()=>{
 console.log('websock client closed!')
@@ -117,7 +139,7 @@ const interval=setInterval(function ping(){
 },30000);
 */
 
-console.log(PORT)
+console.log("soll on port: ", PORT)
 
 
 

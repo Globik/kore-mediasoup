@@ -20,9 +20,10 @@ function onmessage(msg) {
 mout.innerHTML+="<b>msg: </b>"+msg+"<br>";
 console.log('length: ',msg.length);
 //return;
-try{var m=JSON.parse(msg);}catch(e){/*mout.innerHTML+="<b>parse err: </b>"+e+"<br><b>not json: </b>"+msg+"<br>";*/
-									//return;
-								   }
+try{var m=JSON.parse(msg);}catch(e){
+mout.innerHTML+="<b>parse err: </b>"+e+"<br><b>not json: </b>"+msg+"<br>";
+									return;
+  }
 	/*
 if(m.type=="user_id"){
 usid=m.id;
@@ -90,6 +91,10 @@ mout.innerHTML+="<b>websocket closed</b><br>";
 socket.onmessage = function(evt) { onmessage(evt.data) };
 socket.onerror = function(evt) { mout.innerHTML+="<b>onerror:</b>"+evt+"<br>"; };
 }
+
+function connect_janus(){
+if(socket)socket.send(JSON.stringify({type:"connect"}))	
+}
 function send_message(){
 if(!f.value)return;
 var ob={};
@@ -151,10 +156,15 @@ if(socket)socket.send(JSON.stringify(d));
 //janus:ev,sender:plug.handleid,plugindata:plugin:name,data:echotest:ev,result:ok
 }
 function ping(){
-var d={};
+let d={};
 	d.janus="ping";
-	d.transaction=transaction;
-	if(socket)socket.send(JSON.stringify(d));
+	d.transaction="ping";
+	wsend(d);
+}
+function wsend(obj){
+let ml;
+try{ml=JSON.stringify(obj);}catch(e){console.error(e);return;}
+if(socket && socket.readyState==1)socket.send(ml);	
 }
 function create_channel(){
 pc=new RTCPeerConnection(cf);
