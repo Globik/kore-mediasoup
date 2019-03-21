@@ -1,6 +1,8 @@
 // some basic concept "ping-pong" test with Janus phunix transport with type SOCK_SEQPACKET
 const seqpacket=n=>{
-return `<html><head><title>seqpacket</title></head><body><h2>Hello</h2>
+return `<html><head><title>seqpacket</title></head><body>
+<a href="/html/test.html">test html</a> | <a href="/html/videoBroadcast.html">viedoBroadcast.html</a>
+<h2>Hello</h2>
 <button onclick="janus_ping();">ping</button><button onclick="janus_info();">info</button>
 <button onclick="ajax();">ajax</button><br><br>
 <button onclick="janus_session_create();">session create</button><br><br>

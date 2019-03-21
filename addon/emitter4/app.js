@@ -3,6 +3,7 @@ const PORT=3000;
 const WebSocket=require('/home/globik/alikon/node_modules/ws');
 const koaBody=require('koa-body');
 const render=require('koa-rend');
+const serve=require('koa-static');
 const Router=require('koa-router');
 
 const unix_sock_path="/home/globik/fuck"; // I am sorry for that but I was so tired
@@ -17,12 +18,14 @@ const w=new Worker();
 w.on('connect',(v)=>{console.log("*** Janus Client CONNECTED! ***",v)})
 w.on('erroro',e=>console.log('*** Janus ERRORO: ***',e))
 w.on('message',msg=>{
-//console.log('msg came from seq_sock_server: ',msg);
-ev.emit('janus_msg',msg);
+console.log('***msg came from seq_sock_server: ***\n',msg.toString());
+
+
+ev.emit('janus_msg',msg.toString());
 })
 w.create_client(unix_sock_path)
 //w.psend("pupkin");
-
+app.use(serve(__dirname+'/public'));
 render(app,{root:'views', development:true});
 app.use(koaBody());
 
@@ -30,7 +33,6 @@ pub_router.get('/',async ctx=>{
 ctx.body=await ctx.render('seqpacket',{})
 })
 pub_router.post('/testEvent', async function food(ctx){
-	console.log(this.name);
 console.log("event_body", __filename,'\n', JSON.stringify(ctx.request.body));
 ctx.body={info:"ok"}	
 })

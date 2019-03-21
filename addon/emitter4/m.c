@@ -327,6 +327,8 @@ k=napi_close_handle_scope(shenv,scope);
 if(k !=napi_ok){printf(red "[%s:%d] close_scope pfucker() is NOT ok!\n" rst, __FILE__, __LINE__);}
 return NULL;
 }
+
+
 //to node.js a message send
 napi_value on_msg_cb(char*msg_str){
 napi_status k;
@@ -338,6 +340,7 @@ napi_value argv[1];
 const char * str = msg_str;//"now_readable";
 size_t str_len = strlen(str);
 k=napi_create_string_utf8(msgEnv, str, str_len, argv);
+//k=napi_create_buffer_copy(msgEnv,str_len,str,NULL, argv);
 if(k !=napi_ok){printf(red "[%s:%d] cr_str1 in on_msg_cb is NOT ok!\n" rst, __FILE__, __LINE__);
 			//return NULL;
 			   }

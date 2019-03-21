@@ -1,6 +1,10 @@
 var socket = null;
 var transaction='';
 var session_id=0,handle_id=0,pc=null;
+
+//"spantransact""spansessid""spanhandleid">0</s
+
+
 var plugin="janus.plugin.echotest";
 var usid=0;
 yrid.textContent=usid;
@@ -17,13 +21,13 @@ var f=gid("f");
 var interv;
 
 function onmessage(msg) {
-mout.innerHTML+="<b>msg: </b>"+msg+"<br>";
+//mout.innerHTML+="<b>msg: </b>"+msg+"<br>";
 console.log('length: ',msg.length);
 //return;
 try{var m=JSON.parse(msg);}catch(e){
 mout.innerHTML+="<b>parse err: </b>"+e+"<br><b>not json: </b>"+msg+"<br>";
 									return;
-  }
+}
 	/*
 if(m.type=="user_id"){
 usid=m.id;
@@ -61,7 +65,11 @@ handle_id=m.data.id;
 spanhandleid.textContent=handle_id;
 //m.session_id,m.transaction
 }else if(m.janus=="success"){
-
+if(m.transaction=="create_session"){
+session_id=m.data.id;
+spansessid.textContent=session_id;
+spantransact.textContent=m.transaction;
+}
 }else if(m.janus=="event"){
 if(m.jsep && m.jsep.type=="answer"){
 var ax = new RTCSessionDescription({ type: "answer", sdp: m.jsep.sdp });
@@ -113,7 +121,12 @@ if(socket)socket.send(JSON.stringify(ob));
 		ob.transaction=transaction;
 		if(socket)socket.send(JSON.stringify(ob));
 	}
-	
+	function ping(){
+	let d={};
+	d.janus="ping";
+	d.transaction="ping";
+	wsend(d);	
+	}
 function disconnect(){
 if(!socket){mout.innerHTML+="<b>already disconnected!</b><br>";return;}
 socket.close();
@@ -137,23 +150,14 @@ ob.handle_id=handle_id;
 ob.transaction=transaction;
 if(socket)socket.send(JSON.stringify(ob));
 }
-function go_destroy(){
-	/*
-		var ob={};
-			ob.type="destroy";
-			ob.session_id=session_id;
-			ob.handle_id=handle_id;
-			ob.transaction=transaction;
-			if(socket)socket.send(JSON.stringify(ob));
-			*/
-		}
+function go_destroy(){}
+
 function create_session(){
+	//alert("create_session");
 var d={};
 d.janus="create";
-d.transaction=transaction;
+d.transaction="create_session";
 if(socket)socket.send(JSON.stringify(d));
-//{ "janus": "success", "transaction": "transaction_string", "data": { "id": 777363624503552 } }
-//janus:ev,sender:plug.handleid,plugindata:plugin:name,data:echotest:ev,result:ok
 }
 function ping(){
 let d={};
