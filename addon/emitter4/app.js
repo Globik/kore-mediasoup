@@ -15,16 +15,13 @@ const pub_router=new Router();
 
 const Worker=require('./worker.js');
 const w=new Worker();
-w.on('connect',(v)=>{console.log("*** Janus Client CONNECTED! ***",v)})
-w.on('erroro',e=>console.log('*** Janus ERRORO: ***',e))
-w.on('message',msg=>{
-console.log('***msg came from seq_sock_server: ***\n',msg.toString());
-
-
-ev.emit('janus_msg',msg.toString());
+w.on('connect', function(v){console.log("*** Janus Client CONNECTED! ***",v)})
+w.on('erroro', function(e){console.log('*** Janus ERRORO: ***',e)})
+w.on('message', function (msg){
+//console.log('***msg came from seq_sock_server: ***\n');
+ev.emit('janus_msg',msg);
 })
 w.create_client(unix_sock_path)
-//w.psend("pupkin");
 app.use(serve(__dirname+'/public'));
 render(app,{root:'views', development:true});
 app.use(koaBody());
@@ -43,24 +40,80 @@ const servak=app.listen(PORT);
 const wss=new WebSocket.Server({server:servak})
 
 
-wss.on('connection',function websock_community(ws,req){
-console.log("websock client opened!");
-function on_janus_msg(message){
-console.log("*** on_janus_msg! ***");
-wsend(message);
+
+function send_target(trans, obj){
+console.log("trg sessId: ", trans);
+wss.clients.forEach(function(el){
+if(el.trans==trans){
+console.log("trg Yes. It's target! ",el.trans, trans);
+if(el.readyState===WebSocket.OPEN)el.send(JSON.stringify(obj));	
+}	
+});
+}
+function on_janus_msg(msg){
+let l;
+try{l=JSON.parse(msg);}catch(e){console.log(msg);return;}	
+l.type="janus";
+if(l.transaction){
+let a=l.transaction.split("_");
+l.transi=a[1];
+send_target(a[0],l);
+}
+ if(l.janus=="media"){}
 }
 ev.on('janus_msg',on_janus_msg);
 
-wsend({type:"msg",msg:"Hi from server!"});
+wss.on('connection', function(ws,req){
+console.log("websock client opened!");
+ws.trans=null;
+ws.sid=0;
+ws.hid=0;
+/*
+function on_janus_msg(message){
+console.log("*** on_janus_msg! ***");
+let ml;
+try{ml=JSON.parse(message);if(ml.janus)ml.type="janus";}catch(e){console.log(message);return;}
+if(ml.janus=="success"){
+if(ml.transaction=="session_create"){
+console.log("session create!");
+ws.sid=ml.data.id;
+}else if(ml.transaction=="session_destroy"){
+//ws.sid=0;	
+}else{}
+}else if(ml.janus=="timeout"){
+//ws.sid=0;
+}else{}
+//send_target(ws.sid,ml);
+//if(ws.readyState==1)if(ml)ws.send(JSON.stringify(ml));
+
+
+}*/
+//ev.on('janus_msg',on_janus_msg);
+
+wsend({type:"usid", msg: "Hi from server!"});
 ws.on('message', function d_msg(msg){
 console.log("msg came: ",msg);
-//if(msg.janus){
+let l;var sens_to_clients=0;
+try{
+l=JSON.parse(msg);	
+}catch(e){return;}
+if(l.janus){
 w.psend(msg);
-//}
+send_to_clients=1;
+}
+if(l.type=="onuser"){
+console.log("MSG type: ", l.type);
+ws.trans=l.username;
+send_to_clients=1;	
+}
+
+if(send_to_clients==0){
+ws.send(msg);	
+}
 })
 ws.on('close',()=>{
 console.log('ws closed')
-ev.removeListener('janus_msg', on_janus_msg);
+//ev.removeListener('janus_msg', on_janus_msg);
 })
 
 function wsend(ob){

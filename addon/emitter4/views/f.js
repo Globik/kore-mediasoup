@@ -100,10 +100,7 @@ pc.setRemoteDescription(ax, onSetRemoteDescriptionDone, onError);
 }else{}
 	
 }else if(m.type=="hello_user"){
-/*transaction=m.transaction;
-session_id=m.session_id;
-spansessid.textContent=session_id;
-spantransact.textContent=transaction;*/
+
 }else{}
 }
 

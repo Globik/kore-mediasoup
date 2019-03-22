@@ -17,30 +17,15 @@ const app=new Koa();
 const pub_router=new Router();
 const Worker=require('./worker.js');
 const w=new Worker();// this is the SOCK_SEQPACKET
-//const intervaljson={};
-//intervaljson.janus="ping";//"keepalive";
-//intervaljson.transaction="ping";//null;
-//intervaljson.session_id=null;
+
 
 
 w.on('connect',function(v){console.log("CONNECT",v);});
 w.on('erroro',function(e){console.log('ERRORO: ',e)});
 
-/*
-w.on("keepalive_ready", function(s){
-console.log("ON_KEEP_ALIVE READY: ", s);
-intervalik=setInterval(function dint(){
-console.log("interval?");
-let v=JSON.stringify(intervaljson);
-console.log(v);
-w.psend(v);
-},intsec);
-})
-*/ 
 w.on('message', function(msg){
-console.log('msg came from seq_sock_server Janus webrtc app1: ',msg);
-var send_to_client=true;
-if(send_to_client==true){console.log("*** SENT TO WS***");ev.emit('from_janus', msg);}
+//console.log('msg came from seq_sock_server Janus webrtc app1: ',msg);
+ev.emit('from_janus', msg);
 
 })
 w.create_client(unix_sock_path) 
