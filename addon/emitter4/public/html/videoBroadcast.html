@@ -10,10 +10,10 @@
 <body>
 <a href="/html/videoBroadcast.html" target="_blank">vieoBrodcast.html</a><br>
 
-<div><b>TRANSACTION:</b>&nbsp;<span id="spantransaction">0</span></div>
-<div><b>SESSION_ID:</b>&nbsp;<span id="sessid">0</span></div>
-<div><b>HANDLE_ID:</b>&nbsp;<span id="hanid">0</span></div>
-<div><b>FEED:</b>&nbsp;<span id="pubid">0</span></div>
+<div><b>TRANSACTION:</b>&nbsp;<span id="spantransaction">0</span> | <b>ROOM</b>&nbsp;<span id="roomid">0</span></div>
+<div><b>SESSION_ID:</b>&nbsp;<span id="sessid">0</span> | <b>DESCRIPTION:</b>&nbsp;<span id="roomdesc">0</span></div>
+<div><b>HANDLE_ID:</b>&nbsp;<span id="hanid">0</span> | <b>VIDEO </b><span id="isvid">false</span></div>
+<div><b>FEED:</b>&nbsp;<span id="pubid">0</span> | <b>AUDIO </b><span id="isaud">false</span></div>
 <b>Choose your nick:</b><br>
 <input id="yourNick" type="text" value="Bob"/><button onclick="set_user();">set nick</button>
 <b>you: </b><span id="spanYourNick"></span>&nbsp;
@@ -28,7 +28,7 @@
 
 <b>Local Video </b><br>
 <video id="localVideo" autoplay style="width: 160px;height: 120px; border:1px solid black;">no video supported</video>
-<br>
+
 	
 	<button onclick="ping();">ping janus</button>
 	<button onclick="session_create();">session create</button>
@@ -49,17 +49,22 @@
 <b>output:</b><br>
 <output id="out"></output>
 <script>
-var a2=Math.random();
+var plugin_name="janus.plugin.videoroom";
+//var a2=Math.random();
 var session_id=0;
 var handle_id=0;
-var transaction="";//??
+var transaction="";// unique_name + _Number code of request -> "Bob_10"
 var pubId=0;
 var owner=false;
 var sock;
 var who_am_i;
 var who_is_he;
-//var j_interval;//keepalive
-var j_timer=null;
+var roomId=0;
+var roomDesc=0;
+var isVid=false;
+var isAud=false;
+
+var j_timer=null;//keep alive session
 function open_sock(){
 sock=new WebSocket("ws://localhost:3000/connect");
 }
@@ -80,56 +85,68 @@ try{a=JSON.parse(data);
 //console.log(a.janus);
 }catch(e){console.error(e);return;}
 //console.log(a.janus);
-if(a.type=="janus"){
+if(a.typ=="janus"){
 if(a.janus=="success"){
-if(a.transaction=="session_create"){
+if(a.transi=="10"){
 //alert("session create");
 session_id=a.data.id;//(a.data?a.data.id:0);
 sessid.textContent=session_id;
-spantransaction.textContent=a.transaction;
+spantransaction.textContent="create "+a.transi;
 set_keep_alive();
-}else if(a.transaction=="session_destroy"){
+}else if(a.transi=="11"){
 session_id=0;
 sessid.textContent=session_id;
-spantransaction.textContent=a.transaction;
-}else if(a.transaction=="attach_plugin"){
+spantransaction.textContent="destroy "+a.transi;
+clear_keep_alive();
+}else if(a.transi=="12"){
 handle_id=a.data.id;
 hanid.textContent=handle_id;
-spantransaction.textContent=a.transaction;
+spantransaction.textContent="attach "+a.transi;
 //if(session_id==0){console.warn("why sessin_id is 0?");}
 //set_keep_alive({session:session_id,handle:handle_id});	
-}else if(a.transaction=="detach_plugin"){
+}else if(a.transi=="13"){
 handle_id=0;
 hanid.textContent=handle_id;	
-spantransaction.textContent=a.transaction;
-}else if(a.transaction=="list_participants"){
+spantransaction.textContent="detach "+a.transi;
+}else if(a.transi=="14"){
 // for subscribers
 spantransaction.textContent=a.transaction;
 if(a.plugindata.data.participants.length > 0){
 pubId=a.plugindata.data.participants[0].id;
+spantransaction.textContent="listparticipants "+a.transi;
 pubid.textContent=pubId;
 who_is_he=a.plugindata.data.participants[0].display;
 spanHisNick=who_is_he;
 }
-}
+}else{console.log("Unknown transi");}
 }else if(a.janus=="event"){
 if(a.jsep && a.jsep.type=="answer"){
 handle_answer(a.jsep);	
 }else if(a.jsep && a.jsep.type=="offer"){
 handle_offer(a.jsep);	
 }
-if(a.transaction=="join_room"){
-spantransaction.textContent=a.transaction;	
-}else if(a.transaction=="configure"){
-spantransaction.textContent=a.transaction;	
-}else if(a.transaction=="unpublish"){
-spantransaction.textContent=a.transaction;
-}else if(a.transaction=="leave_room"){
-spantransaction.textContent=a.transaction;	
+if(a.transi=="15"){
+spantransaction.textContent="join_room "+a.transi;
+// if  publisher
+//{"janus":"event","session_id":643102042659517,"transaction":"Bob23_15","sender":7335137699849342,"plugindata":{"plugin":"janus.plugin.videoroom","data":{"videoroom":"joined","room":1234,"description":"Demo Room","id":4475055155860550,"private_id":3914707008,"publishers":[]}},"typ":"janus","transi":"15"}
+pubId=a.plugindata.data.id//feed!(for subscribers)
+pubid.textContent=pubId;
+//plagindata.data: videoroom:joined, publishers:[],room:1234,description:demo,private_id:4..4..6
+roomId=a.plugindata.data.room;
+roomid.textContent=roomId;
+roomDesc=a.plugindata.data.description;
+roomdesc.textContent=roomDesc;
+}else if(a.transi=="16"){
+spantransaction.textContent="configure "+a.transi;	
+}else if(a.transi=="17"){
+spantransaction.textContent="unpublish "+a.transi;
+}else if(a.transi=="18"){
+spantransaction.textContent="leave_room "+a.transi;	
 }else{}
 
-}else if(a.janus=="webrtcup"){
-//clear_keep_alive()??
+}else if(a.janus=="webrtcup"){ 
+console.warn("*** WEBRTCUP! ***", data);
+//alert("webrtc UP! "+data);
 }else if(a.janus=="timeout"){
 if(session_id !=a.session_id)console.warn("session_id !=a.session_id");
 session_id=0;
@@ -137,11 +154,44 @@ handle_id=0;//??
 sessid.textContent=session_id;
 hanid.textContent=handle_id;
 clear_keep_alive();	
-}
-}else if(a.type="usid"){
-console.log("who am I?: ", who_am_i);	
-wsend({type:"onuser", username:who_am_i});
+}else if(a.janus=="media"){
+console.warn("MEDIA! "+data);
+// OK , you're on the air! Broadcast to all this event
+if(a.type=="video"){
+isVid=a.receiving;
+isvid.textContent=isVid;	
+}else if(a.type=="audio"){
+isAud=a.receiving;
+isaud.textContent=isAud;	
+}else{}//datachannel
+let d={};
+d.typ="onair";
+d.roomdesc=roomDesc;
+d.roomid=roomId;
+d.feed=pubId;
+d.type=a.type;
+d.receiving=a.receiving
+wsend(d);
 }else{}
+}else if(a.typ=="usid"){
+console.log("who am I?: ", who_am_i);	
+wsend({typ:"onuser", username:who_am_i});
+}else if(a.typ=="atair"){
+//for subscribers
+roomDesc=a.roomdesc;
+roomdesc.textContent=roomDesc;
+roomId=a.roomid;
+roomid.textContent=roomId;
+pubId=a.feed;
+pubid.textContent=pubId;
+if(a.type=="video"){
+isVid=a.receiving;
+isvid.textContent=isVid;	
+}else if(a.type=="audio"){
+isAud=a.receiving;
+isaud.textContent=isAud;	
+}else{}
+}else if(a.typ=="msg"){}else{}
 // {"janus": "timeout", "session_id": 6925394170560529}
 }
 sock.onclose=function(){
@@ -182,13 +232,13 @@ function undo_owner(){}
 
 function ping(){
 let d={};
-d.transaction="ping";
+d.transaction=transaction+"_23";//"ping";
 d.janus="ping"
 wsend(d);
 }
 function janus_info(){
 let d={};
-d.transaction="info";
+d.transaction=transaction+"_24";//"info";
 d.janus="info";
 wsend(d);
 }
@@ -202,14 +252,14 @@ console.log(t3[0],t3[1]);
 */
 function session_create(){
 let d={};
-d.transaction=transaction+"_1";//"session_create";
+d.transaction=transaction+"_10";//"session_create";
 d.janus="create";
 wsend(d);
 // {"janus": "success", "transaction": "polydor", "data": {"id": 1800535620133879}} => session_id
 }
 function session_destroy(){
 let d={};
-d.transaction=transaction;//"session_destroy";
+d.transaction=transaction+"_11";//"session_destroy";
 d.session_id=session_id;
 d.janus="destroy";
 wsend(d);
@@ -217,7 +267,7 @@ wsend(d);
 }
 function attach_plugin(){
 let d={};
-d.transaction="attach_plugin";
+d.transaction=transaction+"_12";
 d.session_id=session_id;
 d.janus="attach";
 d.plugin="janus.plugin.videoroom";
@@ -228,10 +278,10 @@ wsend(d);
 function detach_plugin(){
 let d={};
 d.handle_id=handle_id;
-d.transaction="detach_plugin";
+d.transaction=transaction+"_13";
 d.session_id=session_id;
 d.janus="detach";
-d.plugin="janus.plugin.videoroom";
+d.plugin=plugin_name;
 d.opaque_id="fucker";//?? any need?
 //console.log(d);
 //{"janus": "success", "session_id": 4085346587175549, "transaction": "detach_plugin"}
@@ -246,13 +296,13 @@ d.body.request="join";
 d.body.room=1234;
 d.body.ptype=is_owner()?"publisher":"subscriber";
 if(!is_owner()){
-if(!pubid){alert("No pubid feed?");return;}
+if(pubId==0){alert("No pubid feed?");return;}
 d.body.feed=pubId;
 }
 if(is_owner()){
-d.body.display="Globik";
+d.body.display=transaction;//?
 }
-d.transaction=is_owner()?"join_room":"subscibe_room";
+d.transaction=is_owner()?transaction+"_15":transaction+"_19";
 d.session_id=session_id;
 d.handle_id=handle_id;
 d.janus="message";
@@ -286,7 +336,7 @@ let d={};
 d.janus="message";
 d.session_id=session_id;
 d.handle_id=handle_id;
-d.transaction="list_participants";
+d.transaction=transaction+"_14";
 d.body={};
 d.body.request="listparticipants";
 d.body.room=1234;
@@ -305,7 +355,7 @@ d.janus="message";
 d.body={};
 d.body.request="leave";
 d.body.room=1234;
-d.transaction="leave_room";
+d.transaction=transaction+"_18";
 d.session_id=session_id;
 d.handle_id=handle_id;
 wsend(d);	
@@ -319,7 +369,7 @@ let d={};
 d.body={};
 d.body.request="exists";
 d.body.room=1234;
-d.transaction="exists";
+d.transaction=transaction+"_20";
 d.session_id=session_id;
 d.handle_id=handle_id;
 d.janus="message";	
@@ -337,7 +387,7 @@ d.body.request="unpublish";
 d.body.room=1234;
 //d.body.ptype="publisher";
 //d.body.display="Globik";
-d.transaction="unpublish";
+d.transaction=transaction+"_17";
 d.session_id=session_id;
 d.handle_id=handle_id;
 d.janus="message";
@@ -356,7 +406,7 @@ d.janus="message";
 d.body={};
 d.body.request="list";
 d.body.room=1234;
-d.transaction="list_rooms";
+d.transaction=transaction+"_21";
 d.session_id=session_id;
 d.handle_id=handle_id;
 wsend(d);
@@ -379,7 +429,7 @@ console.warn("setting keep_alive");
 if(j_timer !=null){console.warn("why j_timer is not null?");}
 j_timer=setTimeout(function tick(){	
   keep_alive();
-j_timer=setTimeout(tick, 10000);//50 sec
+j_timer=setTimeout(tick, 40000);//50 sec max
 }, 10000);
 // "bytes-received": 1344533,
 
@@ -398,7 +448,7 @@ let d={};
 d.janus="keepalive";
 d.session_id=session_id;
 //d.handle_id=handle_id;
-d.transaction="keep_alive";
+d.transaction=transaction+"_25";//"keep_alive";
 wsend(d);
 }
 var pc=null;
@@ -407,6 +457,7 @@ var offer_opts={offerToReceiveAudio:0, offerToReceiveVideo:0};
 
 function publish(){
 //for publisher
+// TODO is_owner?
 navigator.mediaDevices.getUserMedia({audio: true,video: true}).then(gotLocalStream).catch(function(e){console.error(e.name, e)})
 }
 
@@ -476,7 +527,7 @@ d.body={};
 d.body.request="configure";
 d.body.audio=true;
 d.body.video=true;
-d.transaction="configure";
+d.transaction=transaction+"_16";//"configure";
 d.session_id=session_id;
 d.handle_id=handle_id;
 //console.log('desc: ',JSON.stringify(desc));
@@ -517,7 +568,7 @@ d.janus="message";
 d.body={};
 d.body.request="start";
 d.body.room=1234;
-d.transaction="start";
+d.transaction=transaction +"_22";//"start";
 d.session_id=session_id;
 d.handle_id=handle_id;
 d.jsep=pc.localDescription;
