@@ -1,4 +1,4 @@
-# kore-mediasoup
+# kore-mediasoup DEPRICATED!
 It's time to hack [mediasoup](https://github.com/versatica/mediasoup) - Cutting Edge WebRTC Videoconferencing written in C++.
 
 Based on [Version 1.2.8](https://github.com/versatica/mediasoup/tree/1.2.8)
